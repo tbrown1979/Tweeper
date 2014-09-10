@@ -2,11 +2,18 @@ scalaVersion := "2.10.2"
 
 libraryDependencies ++= {
   val akkaV = "2.1.4"
+  val sprayV = "1.1.1"
   Seq(
-    "io.spray"            %   "spray-json_2.10"   % "1.2.5",
-    "com.typesafe.akka"   %%  "akka-actor"        % akkaV,
-    "com.typesafe.akka"   %%  "akka-testkit"      % akkaV   % "test",
-    "org.specs2"          %%  "specs2-core"       % "2.3.9" % "test",
-    "org.twitter4j" % "twitter4j-stream" % "3.0.5"
+    "io.spray"               %   "spray-json_2.10"   % "1.2.5",
+    "com.typesafe.akka"      %%  "akka-actor"        % akkaV,
+    "com.typesafe.akka"      %%  "akka-testkit"      % akkaV   % "test",
+    "org.specs2"             %%  "specs2-core"       % "2.3.9" % "test",
+    "org.twitter4j"          %   "twitter4j-stream"  % "3.0.5",
+    "com.sksamuel.elastic4s" %%  "elastic4s"         % "1.2.1.2",
+    "io.spray"               %   "spray-can"         % sprayV,
+    "io.spray"               %   "spray-routing"     % sprayV,
+    "io.spray"               %   "spray-client"      % sprayV,
+    "io.spray"               %   "spray-testkit"     % sprayV,
+    "io.spray"               %   "spray-json_2.10"   % "1.2.5"
   )
 }

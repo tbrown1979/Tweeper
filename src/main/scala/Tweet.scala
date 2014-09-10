@@ -1,4 +1,4 @@
-package com.tbrown
+package com.tbrown.twitterStream
 import akka.actor.{Actor, ActorRef}
 import twitter4j._
 

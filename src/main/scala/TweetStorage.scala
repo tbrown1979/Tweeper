@@ -1,16 +1,14 @@
-package com.tbrown
+package com.tbrown.twitterStream
 
 import akka.actor.Props
 import akka.actor.{Actor, ActorSystem, ActorRef}
 import akka.pattern.{ ask, pipe }
 import akka.routing.RoundRobinRouter
 import akka.util.Timeout
-import concurrent.ExecutionContext
-import concurrent.Future
 import java.util.concurrent.TimeUnit;
 import scala.concurrent.duration._
 import scala.util.{Success, Failure}
-import scala.util.{Success, Failure}
+
 import twitter4j._
 
 class TweetStatStorage extends Actor {
@@ -18,7 +16,7 @@ class TweetStatStorage extends Actor {
 
   val startTime = currentTime
   var numOfTweets = 0D
-  var tweetsWithUrls = 0D 
+  var tweetsWithUrls = 0D
   var tweetsWithEmojis = 0D
   var tweetsWithPhotos = 0D
   val emojiStorage = new ElementCounter[Emoji]{}
@@ -53,10 +51,10 @@ class TweetStatStorage extends Actor {
   private def updateDomains(t: Tweet) = t.domains.foreach(e => domainStorage.incrElementCount(e))
 
   private def percentTweetsWith(x: Double) = ((x / numOfTweets) * 100).round
-  private def report = Future {
+  private def report = future {
     s"Number of Total Tweets: $numOfTweets  \n" +
     s"Avg Tweets Per Second:  $avgPerSecond \n" +
-    s"Avg Tweets Per Min:     $avgPerMinute \n" + 
+    s"Avg Tweets Per Min:     $avgPerMinute \n" +
     s"Avg Tweets Per Hour:    $avgPerHour   \n" +
     s"% With Photos:          ${percentTweetsWith(tweetsWithPhotos)}% \n" +
     s"% With Urls:            ${percentTweetsWith(tweetsWithUrls)}%   \n" +
@@ -64,7 +62,7 @@ class TweetStatStorage extends Actor {
     s"Top Emojis:             ${emojiStorage.topElements(3).mkString("  ")} \n" +
     s"Top Hashtags:           ${hashtagStorage.topElements(3).mkString(", ")} \n" +
     s"Top domains:            ${domainStorage.topElements(3).mkString(", ")}"
-  }(ExecutionContext.fromExecutor(null)) onComplete {
+  } onComplete {
     case Success(s) => println(s)
     case Failure(e) => println("Failed: " + e)
   }
@@ -85,6 +83,4 @@ trait ElementCounter[A] {
     ).sortWith(_._2 > _._2).map(_._1)
 
   def incrElementCount(elem: A) = map.update(elem, map.getOrElse(elem, 0) + 1)
-
-
 }

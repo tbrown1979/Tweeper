@@ -1,10 +1,7 @@
-package com.tbrown
+package com.tbrown.twitterStream
 import twitter4j._
 import akka.actor.ActorRef
-import scala.concurrent._
-import scala.concurrent.Future
 import scala.util.{Success, Failure}
-import ExecutionContext.Implicits.global
 
 object Util {
   val config = new twitter4j.conf.ConfigurationBuilder()
@@ -15,18 +12,16 @@ object Util {
     .build
 
   def simpleStatusListener(storage: ActorRef) = new StatusListener() {
-    def onStatus(status: Status) { Future(new Tweet(status)).onComplete{
-      case Success(t) => storage ! t
-      case _ => "FAILED TWEET CAPTURE"}
+    def onStatus(status: Status) {
+      future(new Tweet(status)).onComplete{
+        case Success(t) => storage ! t
+        case _ => "FAILED TWEET CAPTURE"}
     }
     //def onStatus(status: Status) { storage ! status }
     def onDeletionNotice(statusDeletionNotice: StatusDeletionNotice) {}
     def onTrackLimitationNotice(numberOfLimitedStatuses: Int) {}
     def onException(ex: Exception) { ex.printStackTrace }
     def onScrubGeo(arg0: Long, arg1: Long) {}
-    def onStallWarning(stallWarning: StallWarning) {
-//      println("\n\nSTALLING!!!!! ---- \n" + stallWarning + "\n\n\n")
-    }
+    def onStallWarning(stallWarning: StallWarning) {}
   }
-
 }

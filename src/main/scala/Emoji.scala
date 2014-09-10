@@ -1,4 +1,4 @@
-package com.tbrown
+package com.tbrown.twitterStream
 import spray.json.DefaultJsonProtocol
 //import spray.httpx.SprayJsonSupport._
 import spray.json._

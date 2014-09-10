@@ -1,4 +1,4 @@
-package com.tbrown
+package com.tbrown.twitterStream
 
 import org.specs2.specification.Scope
 import org.specs2.mutable.Specification
@@ -17,7 +17,7 @@ object ScraperSpec extends Specification {
       val s = "RT @woahirwn: rt for a long indirect 🌿😘😅12345 🇹 🇨🇳"
       val st = "😅"
       val t = "1f1e8-1f1f3"
-      def test(x: String) = 
+      def test(x: String) =
         new String(x.split("-").flatMap{ codepoint =>
           Character.toChars(Integer.parseInt(codepoint, 16))
         })
