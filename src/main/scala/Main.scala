@@ -23,7 +23,6 @@ object Main extends App {
   twitterStream.sample
   // Thread.sleep(5000)
   //system.scheduler.schedule(0 seconds, 5 seconds, storage, Report)
-
 }
 
 
@@ -34,7 +33,6 @@ object TestMain extends App {
   val res: Future[SearchResponse] = client execute { search in "bands"->"singers" }
 
   //val res: Future[IndexResponse] = client execute { index into "bands/singers" fields "name"->"chris martin" }
-
 
   res onComplete{
     case Success(s) => println(s)
