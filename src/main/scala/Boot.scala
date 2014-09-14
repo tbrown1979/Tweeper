@@ -12,7 +12,7 @@ object Boot extends App {
   implicit val system = StreamingActorSystem
 
   // create and start our service actor
-  val service = system.actorOf(Props[MyServiceActor], "demo-service")
+  val service = system.actorOf(Props[DemoService], "demo-service")
 
   // start a new HTTP server on port 8080 with our service actor as the handler
   IO(Http) ! Http.Bind(service, "0.0.0.0", port)
