@@ -12,10 +12,12 @@ import scala.concurrent.duration._
 import scala.util.{Success, Failure}
 import scala.util.{Success, Failure}
 import twitter4j._
+import com.typesafe.config.ConfigFactory
+
 
 
 package object twitterStream {
-  //val streamingConfig = ConfigFactory.load() don't use yet...
+  val TwitterStreamingConfig = ConfigFactory.load()
 
   implicit lazy val StreamingActorSystem: ActorSystem = ActorSystem()
 

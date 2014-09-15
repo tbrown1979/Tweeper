@@ -36,3 +36,8 @@ case class Emoji(
 object Emoji extends DefaultJsonProtocol {
   implicit val EmojiFormat = jsonFormat16(Emoji.apply)
 }
+
+case class Tweet(
+  retweeted: Boolean,
+  id: Long
+)
