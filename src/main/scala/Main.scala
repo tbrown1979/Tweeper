@@ -16,11 +16,11 @@ import org.elasticsearch.action.index.IndexResponse
 
 
 object Main extends App {
-  val twitterStream = new TwitterStreamFactory(Util.config).getInstance
-  val storage = StreamingActorSystem.actorOf(Props[TweetStatStorage])
+  // val twitterStream = new TwitterStreamFactory(Util.config).getInstance
+  // val storage = StreamingActorSystem.actorOf(Props[TweetStatStorage])
 
-  twitterStream.addListener(Util.simpleStatusListener(storage))
-  twitterStream.sample
+  // twitterStream.addListener(Util.simpleStatusListener(storage))
+  //twitterStream.sample
   // Thread.sleep(5000)
   //system.scheduler.schedule(0 seconds, 5 seconds, storage, Report)
 }

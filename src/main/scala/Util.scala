@@ -1,8 +1,10 @@
 package com.tbrown.twitterStream
 import twitter4j._
-import akka.actor.ActorRef
+import akka.event.EventStream
 import scala.util.{Success, Failure}
 import twitter4j.TwitterObjectFactory
+
+case class TweetJson(json: String)
 
 object Util {
   val config = new twitter4j.conf.ConfigurationBuilder()
@@ -13,18 +15,12 @@ object Util {
     .setJSONStoreEnabled(true)
     .build
 
-  //val twitterObjectFactory = new TwitterObjectFactory()
 
-  def simpleStatusListener(storage: ActorRef) = new StatusListener() {
+  def simpleStatusListener(eventStream: EventStream) = new StatusListener() {
     def onStatus(status: Status) {
-      println(TwitterObjectFactory.getRawJSON(status))
+      val tweetJson = TweetJson(TwitterObjectFactory.getRawJSON(status))
+      eventStream.publish(tweetJson)
     }
-    // def onStatus(status: Status) {
-    //   future(new Tweet(status)).onComplete{
-    //     case Success(t) => storage ! t
-    //     case _ => "FAILED TWEET CAPTURE"}
-    // }
-    //def onStatus(status: Status) { storage ! status }
     def onDeletionNotice(statusDeletionNotice: StatusDeletionNotice) {}
     def onTrackLimitationNotice(numberOfLimitedStatuses: Int) {}
     def onException(ex: Exception) { ex.printStackTrace }

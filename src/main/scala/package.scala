@@ -17,7 +17,7 @@ import twitter4j._
 package object twitterStream {
   //val streamingConfig = ConfigFactory.load() don't use yet...
 
-  lazy val StreamingActorSystem: ActorSystem = ActorSystem()
+  implicit lazy val StreamingActorSystem: ActorSystem = ActorSystem()
 
   implicit lazy val ExecutionContext: ExecutionContext = StreamingActorSystem.dispatcher
 

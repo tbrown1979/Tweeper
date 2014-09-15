@@ -15,8 +15,12 @@ import spray.can.Http.RegisterChunkHandler
 class Streamer(client: ActorRef, count: Int) extends Actor with ActorLogging {
   log.debug("Starting streaming response ...")
 
+  override def preStart = {
+    context.system.eventStream.subscribe(context.self, classOf[TweetJson])
+  }
+
   // we use the successful sending of a chunk as trigger for scheduling the next chunk
-  client ! ChunkedResponseStart(HttpResponse(entity = " " * 2048)).withAck(Ok(count))
+  client ! ChunkedResponseStart(HttpResponse(entity = " " * 2048))//.withAck(Ok(count))
 
   def receive = {
     case Ok(0) =>
@@ -27,10 +31,10 @@ class Streamer(client: ActorRef, count: Int) extends Actor with ActorLogging {
 
     case Ok(remaining) =>
       log.info("Sending response chunk ...")
-      (1 to remaining).toList.foreach(n => {Thread.sleep(10); client ! MessageChunk(s"HEY! $n").withAck(remaining-n)})
-      // context.system.scheduler.scheduleOnce(1 millis span) {
-      //   client ! MessageChunk(DateTime.now.toIsoDateTimeString + ", ").withAck(Ok(remaining - 1))
-      //}
+
+    case TweetJson(json) =>
+      log.info("Sending Tweet json!")
+      client ! MessageChunk(json)
 
     case x: Http.ConnectionClosed =>
       log.info("Canceling response stream due to {} ...", x)
