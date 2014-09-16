@@ -1,5 +1,5 @@
 package com.tbrown.twitterStream
-import org.scala_tools.time.Imports._
+import com.github.nscala_time.time.Imports._
 import spray.json.DefaultJsonProtocol
 //import spray.httpx.SprayJsonSupport._
 import spray.json._
