@@ -1,19 +1,11 @@
 package com.tbrown.twitterStream
-import spray.json.DefaultJsonProtocol
+import org.joda.time.DateTime
 import spray.httpx.SprayJsonSupport._
 import spray.json._
-import org.joda.time.DateTime
-import org.joda.time.format.DateTimeFormat
-import org.joda.time.format.ISODateTimeFormat
-import spray.json.deserializationError
-import spray.json.{ JsString, JsValue, RootJsonFormat, DefaultJsonProtocol }
 import DefaultJsonProtocol._
-import scala.util.matching.Regex
-import twitter4j._
 import DateTimeJsonProtocol._
 
 case object Report
-case class TweetFound(status: Status)
 
 case class Emoji(
   name:         String,

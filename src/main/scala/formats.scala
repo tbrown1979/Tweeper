@@ -1,16 +1,12 @@
 package com.tbrown.twitterStream
-//import com.github.nscala_time.time.Imports._
 import spray.json.DefaultJsonProtocol
-import spray.httpx.SprayJsonSupport._
 import spray.json._
 import org.joda.time.{DateTime, DateTimeZone}
 import org.joda.time.format.DateTimeFormat
-import org.joda.time.format.ISODateTimeFormat
 import spray.json.deserializationError
 import spray.json.{ JsString, JsValue, RootJsonFormat, DefaultJsonProtocol }
 import DefaultJsonProtocol._
-import scala.util.matching.Regex
-import twitter4j._
+
 
 object DateTimeJsonProtocol extends DefaultJsonProtocol {//specific to Twitter's datetime
   private def parseDate(date: String): DateTime = {
