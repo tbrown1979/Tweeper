@@ -12,7 +12,7 @@ import HttpMethods._
 import MediaTypes._
 import spray.can.Http.RegisterChunkHandler
 
-class Streamer(client: ActorRef, count: Int) extends Actor with ActorLogging {
+class Streamer(client: ActorRef) extends Actor with ActorLogging {
   log.debug("Starting streaming response ...")
 
   override def preStart = {
