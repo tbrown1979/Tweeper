@@ -11,18 +11,29 @@ import spray.http._
 import HttpMethods._
 import MediaTypes._
 import spray.can.Http.RegisterChunkHandler
+import scala.reflect._
+import scala.reflect.ClassTag
 
-class Streamer(client: ActorRef) extends Actor with ActorLogging {
+sealed trait JsonToClient {
+  val json: String
+}
+case class TweetJson(json: String) extends JsonToClient
+case class OtherJson(json: String) extends JsonToClient
+
+class Streamer[T <: JsonToClient: ClassTag](client: ActorRef) extends Actor with ActorLogging {
   log.debug("Starting streaming response ...")
 
+  //type typeOfStreaming = classTag[T].runtimeClass
+
   override def preStart = {
-    context.system.eventStream.subscribe(context.self, classOf[TweetJson])
+    context.system.eventStream.subscribe(context.self, classTag[T].runtimeClass)
   }
 
   client ! ChunkedResponseStart(HttpResponse(entity = ""))
 
   def receive = {
-    case TweetJson(json) =>
+    case jsonModel: T =>
+      val json = jsonModel.json
       log.info("Sending Tweet json!")
       client ! MessageChunk(json)
 
