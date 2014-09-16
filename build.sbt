@@ -14,6 +14,7 @@ libraryDependencies ++= {
     "io.spray"               %   "spray-routing"     % sprayV,
     "io.spray"               %   "spray-client"      % sprayV,
     "io.spray"               %   "spray-testkit"     % sprayV,
-    "io.spray"               %   "spray-json_2.10"   % "1.2.5"
+    "io.spray"               %   "spray-json_2.10"   % "1.2.5",
+    "org.scalaj"             %  "scalaj-time_2.10.2" % "0.7"
   )
 }

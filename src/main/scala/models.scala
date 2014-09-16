@@ -1,4 +1,5 @@
 package com.tbrown.twitterStream
+import org.scala_tools.time.Imports._
 import spray.json.DefaultJsonProtocol
 //import spray.httpx.SprayJsonSupport._
 import spray.json._
@@ -37,7 +38,37 @@ object Emoji extends DefaultJsonProtocol {
   implicit val EmojiFormat = jsonFormat16(Emoji.apply)
 }
 
-case class Tweet(
+case class Tweet (
   retweeted: Boolean,
-  id: Long
+  id: Long,
+  created_at: DateTime,
+  favorrite_count: Int,
+  text: String,
+  source: String,
+  retweet_count: Int,
+  id_str: String,
+  user: User
 )
+
+object Tweet extends DefaultJsonProtocol {
+  implicit val TweetFormat = jsonFormat9(Tweet.apply)
+}
+
+case class User (
+  location: String,
+  statuses_count: Int,
+  lang: String,
+  id: Long,
+  favourites_count: Int,
+  description: String,
+  name: String,
+  created_at: DateTime,
+  followers_count: Int,
+  friends_count: Int,
+  id_str: String,
+  profile_image_url: String
+)
+
+object User extends DefaultJsonProtocol {
+  implicit val UserFormat = jsonFormat12(User.apply)
+}
