@@ -20,7 +20,7 @@ object Util {
   def simpleStatusListener(storage: ActorRef, analyzer: ActorRef) = new StatusListener() {
     def onStatus(status: Status) {
       val json = TwitterObjectFactory.getRawJSON(status)
-      storage ! json
+      storage ! TweetJson(json)
       future {
         JsonParser(json).convertTo[Tweet]
       } onComplete {

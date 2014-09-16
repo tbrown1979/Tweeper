@@ -6,6 +6,7 @@ import DefaultJsonProtocol._
 import DateTimeJsonProtocol._
 
 case object Report
+case class TweetJson(json: String)
 case class TweetWithJson(tweet: Tweet, json: String)
 
 case class Emoji(

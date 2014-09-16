@@ -9,11 +9,6 @@ import DefaultJsonProtocol._
 
 
 class TopicCheckerActor extends Actor with ActorLogging with TopicsConfig {
-
-  // override def preStart() = {
-  //   context.system.eventStream.subscribe(context.self, classOf[TweetJson])
-  // }
-
   var shouldPrint = true
 
   def receive: Receive = {
@@ -22,6 +17,7 @@ class TopicCheckerActor extends Actor with ActorLogging with TopicsConfig {
         println(tweet)
         shouldPrint = false
       }
+      context.system.eventStream.publish(TweetJson(json))
     case "test" => println("test")
   }
 
