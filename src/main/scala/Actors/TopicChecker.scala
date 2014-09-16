@@ -31,7 +31,7 @@ class TopicCheckerActor extends Actor with ActorLogging {// with TopicsConfig {
   var shouldPrint = true
 
   def receive: Receive = {
-    case TweetJson(json) => if (shouldPrint) {println(JsonParser(json)); shouldPrint = false}
+    case TweetJson(json) => if (shouldPrint) {println(JsonParser(json).convertTo[Tweet]); shouldPrint = false}
     case "test" => println("test")
   }
 
