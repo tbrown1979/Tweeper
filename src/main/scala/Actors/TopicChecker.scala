@@ -8,16 +8,20 @@ import spray.json._
 import DefaultJsonProtocol._
 
 
-class TopicCheckerActor extends Actor with ActorLogging {// with TopicsConfig {
+class TopicCheckerActor extends Actor with ActorLogging with TopicsConfig {
 
-  override def preStart() = {
-    context.system.eventStream.subscribe(context.self, classOf[TweetJson])
-  }
+  // override def preStart() = {
+  //   context.system.eventStream.subscribe(context.self, classOf[TweetJson])
+  // }
 
   var shouldPrint = true
 
   def receive: Receive = {
-    case TweetJson(json) => if (shouldPrint) {println(JsonParser(json).convertTo[Tweet]); shouldPrint = false}
+    case TweetWithJson(tweet, json) =>
+      if (shouldPrint) {
+        println(tweet)
+        shouldPrint = false
+      }
     case "test" => println("test")
   }
 
