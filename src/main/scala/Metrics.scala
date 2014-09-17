@@ -2,13 +2,13 @@ package com.tbrown.twitterStream
 import com.codahale.metrics._
 
 object TweetMetrics {
-  private val metrics = new MetricRegistry
+  val metrics = new MetricRegistry
 
-  private val tweetsConsumed: Counter = metrics.counter(MetricRegistry.name("tweets.count"))
+  val tweetsConsumed: Counter = metrics.counter(MetricRegistry.name("tweets.count"))
   def incrTweetCount = tweetsConsumed.inc
   def getTweetCount = tweetsConsumed.getCount
 
-  private val tweetsRate: Meter = metrics.meter(MetricRegistry.name("tweets.rate"))
+  val tweetsRate: Meter = metrics.meter(MetricRegistry.name("tweets.rate"))
   def markTweet = tweetsRate.mark
   def getMeanRate = tweetsRate.getMeanRate
   def getOneMinuteRate = tweetsRate.getOneMinuteRate

@@ -20,4 +20,7 @@ class TweetRouterActor extends Actor with ActorLogging {
       topicChecker ! TweetJson(json)
       metricActor  ! TrackTweet
   }
+
+  context.system.scheduler.schedule(0 seconds, 60 seconds, metricActor, ReportMetrics)
+
 }

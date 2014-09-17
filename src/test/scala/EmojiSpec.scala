@@ -4,13 +4,11 @@ import org.specs2.specification.Scope
 import org.specs2.mutable.Specification
 import org.specs2.execute._
 import scala.util.{Success, Failure}
-import concurrent.Future
-import concurrent.ExecutionContext
 import scala.concurrent._
 import scala.concurrent.duration._
 
 object ScraperSpec extends Specification {
-  import Emojis._
+  import Emoji._
   "Emoji object" should {
 
     "return a list of emojis found in string" in {

@@ -14,11 +14,7 @@ import spray.can.Http.RegisterChunkHandler
 import scala.reflect._
 import scala.reflect.ClassTag
 
-sealed trait JsonToClient {
-  val json: String
-}
-case class TweetJson(json: String) extends JsonToClient
-case class OtherJson(json: String) extends JsonToClient
+
 
 class Streamer[T <: JsonToClient: ClassTag](client: ActorRef) extends Actor with ActorLogging {
   log.debug("Starting streaming response ...")

@@ -13,5 +13,10 @@ class TweetTrackerActor extends Actor with ActorLogging {
     case TrackTweet =>
       TweetMetrics.incrTweetCount
       TweetMetrics.markTweet
+    case ReportMetrics =>
+      log.info(
+        s"Tweet Count: ${TweetMetrics.getTweetCount}" +
+        s"Rate of Tweets(1min): ${TweetMetrics.getOneMinuteRate}"
+      )
   }
 }
