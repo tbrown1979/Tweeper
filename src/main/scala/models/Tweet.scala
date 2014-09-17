@@ -1,8 +1,7 @@
 package com.tbrown.twitterStream
-import spray.json._
-import DefaultJsonProtocol._
 import org.joda.time.DateTime
 import spray.httpx.SprayJsonSupport._
+import spray.json._
 import DateTimeJsonProtocol._
 
 case class User (

@@ -1,22 +1,20 @@
 package com.tbrown.twitterStream
-
-import scala.concurrent.duration._
+import akka.actor._
 import akka.pattern.ask
 import akka.util.Timeout
-import akka.actor._
-import spray.can.Http
-import spray.can.server.Stats
-import spray.util._
-import spray.http._
-import HttpMethods._
-import MediaTypes._
-import scala.util.{Success, Failure}
-import spray.can.Http.RegisterChunkHandler
 import com.sksamuel.elastic4s.ElasticClient
 import com.sksamuel.elastic4s.ElasticDsl._
-import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.index.IndexResponse
+import org.elasticsearch.action.search.SearchResponse
+import scala.concurrent.duration._
+import spray.can.Http
+import spray.can.Http.RegisterChunkHandler
+import spray.can.server.Stats
 import spray.client.pipelining._
+import spray.http._
+import spray.util._
+import HttpMethods._
+import MediaTypes._
 
 trait TweetPersistence {
   def storeTweet(tweet: String): Unit

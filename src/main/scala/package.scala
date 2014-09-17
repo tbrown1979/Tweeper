@@ -1,27 +1,25 @@
 package com.tbrown
-
 import akka.actor.Props
 import akka.actor.{Actor, ActorSystem, ActorRef}
 import akka.pattern.{ ask, pipe }
 import akka.routing.RoundRobinRouter
 import akka.util.Timeout
+import com.typesafe.config.ConfigFactory
 import concurrent.ExecutionContext
-//import concurrent.Future
 import java.util.concurrent.TimeUnit;
 import scala.concurrent.duration._
-import scala.util.{Success, Failure}
-import scala.util.{Success, Failure}
 import twitter4j._
-import com.typesafe.config.ConfigFactory
-
-
 
 package object twitterStream {
+
   val TwitterStreamingConfig = ConfigFactory.load()
 
   implicit lazy val StreamingActorSystem: ActorSystem = ActorSystem()
 
   implicit lazy val ExecutionContext: ExecutionContext = StreamingActorSystem.dispatcher
+
+  val Success = scala.util.Success
+  val Failure = scala.util.Failure
 
   type ActorRefFactory = akka.actor.ActorRefFactory
   type Future[T] = scala.concurrent.Future[T]

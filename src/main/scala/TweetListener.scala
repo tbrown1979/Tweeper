@@ -1,11 +1,7 @@
 package com.tbrown.twitterStream
-import twitter4j._
 import akka.actor._
-import akka.event.EventStream
-import spray.json._
-import DefaultJsonProtocol._
-import scala.util.{Success, Failure}
-import twitter4j.TwitterObjectFactory
+import twitter4j._
+
 
 object Util {
   val config = new twitter4j.conf.ConfigurationBuilder()

@@ -1,10 +1,7 @@
 package com.tbrown.twitterStream
-import spray.json.DefaultJsonProtocol
-//import spray.httpx.SprayJsonSupport._
+import scala.util.matching.Regex
 import spray.json._
 import DefaultJsonProtocol._
-import scala.util.matching.Regex
-
 
 case class Emoji(unified: String) {
   override def toString: String =

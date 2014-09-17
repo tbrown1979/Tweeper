@@ -1,25 +1,21 @@
 package com.tbrown.twitterStream
 
-import scala.concurrent.duration._
+import akka.actor._
 import akka.pattern.ask
 import akka.util.Timeout
-import akka.actor._
+import scala.concurrent.duration._
+import scala.reflect.ClassTag
+import scala.reflect._
 import spray.can.Http
+import spray.can.Http.RegisterChunkHandler
 import spray.can.server.Stats
-import spray.util._
 import spray.http._
+import spray.util._
 import HttpMethods._
 import MediaTypes._
-import spray.can.Http.RegisterChunkHandler
-import scala.reflect._
-import scala.reflect.ClassTag
-
-
 
 class Streamer[T <: JsonToClient: ClassTag](client: ActorRef) extends Actor with ActorLogging {
   log.debug("Starting streaming response ...")
-
-  //type typeOfStreaming = classTag[T].runtimeClass
 
   override def preStart = {
     context.system.eventStream.subscribe(context.self, classTag[T].runtimeClass)

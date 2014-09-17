@@ -1,17 +1,15 @@
 package com.tbrown.twitterStream
-
 import akka.actor.{ActorSystem, Props}
 import akka.io.IO
 import spray.can.Http
-import util.Properties
 import twitter4j._
+import scala.util.Properties
 
 
 object Boot extends App {
 
   val twitterStream = new TwitterStreamFactory(Util.config).getInstance
   val tweetRouter = StreamingActorSystem.actorOf(Props[TweetRouterActor])
-
 
   twitterStream.addListener(Util.simpleStatusListener(tweetRouter))
   twitterStream.sample
