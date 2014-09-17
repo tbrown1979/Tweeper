@@ -11,13 +11,21 @@ import DefaultJsonProtocol._
 class TopicCheckerActor extends Actor with ActorLogging with TopicsConfig {
   var shouldPrint = true
 
+  def parseToTweet(json: String): Tweet =
+    JsonParser(json).convertTo[Tweet]
+
   def receive: Receive = {
-    case TweetWithJson(tweet, json) =>
-      if (shouldPrint) {
-        println(tweet)
-        shouldPrint = false
+    case tj@TweetJson(json) =>
+      future {
+        parseToTweet(json)
+      } onComplete {
+        case Success(tweet) =>
+          if (shouldPrint)
+            log.info("TWEET PARSED :" + tweet)
+          shouldPrint = false
+        case Failure(e) => println(e)
       }
-      context.system.eventStream.publish(TweetJson(json))
+      context.system.eventStream.publish(tj)
     case "test" => println("test")
   }
 

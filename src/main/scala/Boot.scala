@@ -10,12 +10,10 @@ import twitter4j._
 object Boot extends App {
 
   val twitterStream = new TwitterStreamFactory(Util.config).getInstance
-  val storage = StreamingActorSystem.actorOf(Props[TweetPersistenceActor])
-  val topicChecker = StreamingActorSystem.actorOf(Props[TopicCheckerActor])
-  //val eventStream = StreamingActorSystem.eventStream
-  val deadLetters = StreamingActorSystem.deadLetters//for testing without storing
+  val tweetRouter = StreamingActorSystem.actorOf(Props[TweetRouterActor])
 
-  twitterStream.addListener(Util.simpleStatusListener(storage, topicChecker))
+
+  twitterStream.addListener(Util.simpleStatusListener(tweetRouter))
   twitterStream.sample
 
   val port = Properties.envOrElse("PORT", "8080").toInt // for Heroku compatibility

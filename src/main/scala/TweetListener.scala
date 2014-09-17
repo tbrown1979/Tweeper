@@ -17,16 +17,10 @@ object Util {
     .build
 
 
-  def simpleStatusListener(storage: ActorRef, analyzer: ActorRef) = new StatusListener() {
+  def simpleStatusListener(router: ActorRef) = new StatusListener() {
     def onStatus(status: Status) {
       val json = TwitterObjectFactory.getRawJSON(status)
-      storage ! TweetJson(json)
-      future {
-        JsonParser(json).convertTo[Tweet]
-      } onComplete {
-        case Success(tweet) => analyzer ! TweetWithJson(tweet, json)
-        case Failure(e) => println(e)
-      }
+      router ! RouteTweet(json)
     }
     def onDeletionNotice(statusDeletionNotice: StatusDeletionNotice) {}
     def onTrackLimitationNotice(numberOfLimitedStatuses: Int) {}

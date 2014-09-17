@@ -9,6 +9,8 @@ case object Report
 //case class TweetJson(json: String)
 case class TweetWithJson(tweet: Tweet, json: String)
 case class StreamToClient(json: String)
+case class RouteTweet(json: String)
+case object TrackTweet
 
 case class Emoji(
   name:         String,

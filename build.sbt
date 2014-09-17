@@ -4,7 +4,6 @@ libraryDependencies ++= {
   val akkaV = "2.1.4"
   val sprayV = "1.1.1"
   Seq(
-    "io.spray"               %   "spray-json_2.10"   % "1.2.5",
     "com.typesafe.akka"      %%  "akka-actor"        % akkaV,
     "com.typesafe.akka"      %%  "akka-testkit"      % akkaV   % "test",
     "org.specs2"             %%  "specs2-core"       % "2.3.9" % "test",
@@ -15,7 +14,8 @@ libraryDependencies ++= {
     "io.spray"               %   "spray-client"      % sprayV,
     "io.spray"               %   "spray-testkit"     % sprayV,
     "io.spray"               %   "spray-json_2.10"   % "1.2.5",
-    "com.github.nscala-time" %% "nscala-time"        % "1.4.0"
+    "com.github.nscala-time" %%  "nscala-time"       % "1.4.0",
+    "com.codahale.metrics"   %   "metrics-core"      % "3.0.1"
   )
 }
 
