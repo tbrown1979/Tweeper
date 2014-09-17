@@ -5,12 +5,7 @@ object TweetMetrics {
   private val metrics = new MetricRegistry
 
   private val tweetsConsumed: Counter = metrics.counter(MetricRegistry.name("tweets.count"))
-  def incrTweetCount = {
-    tweetsConsumed.inc
-    println(s"Tweet Count: $getTweetCount")
-    println(s"Mean Tweets: $getMeanRate")
-  }
-
+  def incrTweetCount = tweetsConsumed.inc
   def getTweetCount = tweetsConsumed.getCount
 
   private val tweetsRate: Meter = metrics.meter(MetricRegistry.name("tweets.rate"))
