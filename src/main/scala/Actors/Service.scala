@@ -5,7 +5,6 @@ import akka.actor.{ActorContext, Actor}
 import akka.pattern.ask
 import akka.util.Timeout
 import scala.concurrent.duration._
-import scala.util.{Success, Failure}
 import spray.can.Http
 import spray.can.Http.RegisterChunkHandler
 import spray.can.server.Stats
@@ -33,6 +32,10 @@ class DemoService extends Actor with ActorLogging {
 
     case HttpRequest(GET, Uri.Path("/stream"), _, _, _) =>
       val peer = sender // since the Props creator is executed asyncly we need to save the sender ref
-      context actorOf Props(new Streamer[TweetJson](peer))
+      context actorOf Props(new Streamer[SampleTweetJson](peer))
+
+    case HttpRequest(GET, Uri.Path("/stream/filter"), _, _, _) =>
+      val peer = sender // since the Props creator is executed asyncly we need to save the sender ref
+      context actorOf Props(new Streamer[FilterTweetJson](peer))
   }
 }

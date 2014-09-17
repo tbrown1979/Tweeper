@@ -14,5 +14,6 @@ case class TweetWithJson(tweet: Tweet, json: String)
 sealed trait JsonToClient {
   val json: String
 }
-case class TweetJson(json: String) extends JsonToClient
+case class SampleTweetJson(json: String) extends JsonToClient
+case class FilterTweetJson(json: String) extends JsonToClient
 case class OtherJson(json: String) extends JsonToClient//just cuz

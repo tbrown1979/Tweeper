@@ -34,12 +34,8 @@ class TweetPersistenceActor extends TweetStorageActor with ElasticSearchTweetPer
 trait TweetStorageActor extends Actor with ActorLogging with TweetPersistence {
   log.debug("Starting streaming response ...")
 
-  // verride def preStart() = {
-  //   context.system.eventStream.subscribe(context.self, classOf[TweetJson])
-  // }
-
   def receive: Receive = {
-    case TweetJson(json) =>
+    case SampleTweetJson(json) =>
       storeTweet(json)
   }
 }

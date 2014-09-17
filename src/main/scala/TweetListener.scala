@@ -12,16 +12,28 @@ object Util {
     .setJSONStoreEnabled(true)
     .build
 
-
-  def simpleStatusListener(router: ActorRef) = new StatusListener() {
-    def onStatus(status: Status) {
-      val json = TwitterObjectFactory.getRawJSON(status)
-      router ! RouteTweet(json)
-    }
+  def defaultStatusListener(statusFunction: Status => Unit) = new StatusListener() {
+    def onStatus(status: Status) = statusFunction(status)
     def onDeletionNotice(statusDeletionNotice: StatusDeletionNotice) {}
     def onTrackLimitationNotice(numberOfLimitedStatuses: Int) {}
     def onException(ex: Exception) { ex.printStackTrace }
     def onScrubGeo(arg0: Long, arg1: Long) {}
     def onStallWarning(stallWarning: StallWarning) {}
   }
+
+  def filterStatusListener(router: ActorRef) =
+    defaultStatusListener(
+      (status: Status) => {
+        val json = TwitterObjectFactory.getRawJSON(status)
+        router ! FilterTweetJson(json)
+      }
+    )
+
+  def sampleStatusListener(router: ActorRef) =
+    defaultStatusListener(
+      (status: Status) => {
+        val json = TwitterObjectFactory.getRawJSON(status)
+        router ! SampleTweetJson(json)
+      }
+    )
 }

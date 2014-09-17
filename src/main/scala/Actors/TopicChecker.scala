@@ -19,8 +19,7 @@ class TopicCheckerActor extends Actor with ActorLogging with TopicsConfig {
     }
 
   def receive: Receive = {
-    case tj@TweetJson(json) =>
-      future(parseToTweet(json))
+    case tj@FilterTweetJson(json) =>
       context.system.eventStream.publish(tj)
   }
 
