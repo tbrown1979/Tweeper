@@ -1,6 +1,7 @@
 package com.tbrown.twitterStream
 import akka.actor.{ActorSystem, Props}
 import akka.io.IO
+import com.tbrown.DemoServiceActor
 import scala.util.Properties
 import spray.can.Http
 import twitter4j._
@@ -20,7 +21,7 @@ object Boot extends App with TopicsConfig{
 
   val port = Properties.envOrElse("PORT", "8080").toInt // for Heroku compatibility
 
-  val service = StreamingActorSystem.actorOf(Props[DemoService], "demo-service")
+  val service = StreamingActorSystem.actorOf(Props[DemoServiceActor], "demo-service")
 
   IO(Http) ! Http.Bind(service, "0.0.0.0", port)
 }
