@@ -3,7 +3,6 @@ package com.tbrown.twitterStream
 import org.specs2.specification.Scope
 import org.specs2.mutable.Specification
 import org.specs2.execute._
-import scala.util.{Success, Failure}
 import scala.concurrent._
 import scala.concurrent.duration._
 

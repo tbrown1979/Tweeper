@@ -15,7 +15,8 @@ libraryDependencies ++= {
     "io.spray"               %   "spray-testkit"     % sprayV,
     "io.spray"               %   "spray-json_2.10"   % "1.2.5",
     "com.github.nscala-time" %%  "nscala-time"       % "1.4.0",
-    "com.codahale.metrics"   %   "metrics-core"      % "3.0.1"
+    "com.codahale.metrics"   %   "metrics-core"      % "3.0.1",
+    "org.elasticsearch"      %   "metrics-elasticsearch-reporter" % "2.0"
   )
 }
 
