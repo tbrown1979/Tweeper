@@ -31,7 +31,7 @@ trait DemoService extends HttpService {
 
   val demoRoute = {
     path("hello") {
-      complete("Hello!")
+      getFromResource("index.html")
     } ~
     path("ping") {
       complete("PONG!")
@@ -41,7 +41,14 @@ trait DemoService extends HttpService {
         val peer = ctx.responder
         actorRefFactory actorOf Props(new Streamer[FilterTweetJson](peer))
       }
-    }
+    }~
+    pathPrefix("config.js") { get { getFromResource("config.js") } } ~
+    pathPrefix("vendor") { get { getFromResourceDirectory("vendor") } } ~
+    pathPrefix("css") { get { getFromResourceDirectory("css") } } ~
+    pathPrefix("app") { get { getFromResourceDirectory("app") } } ~
+    pathPrefix("img") { get { getFromResourceDirectory("img") } } ~
+    pathPrefix("js") { get { getFromResourceDirectory("js") } }
+
   }
 }
 
