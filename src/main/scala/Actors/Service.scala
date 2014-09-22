@@ -42,12 +42,15 @@ trait DemoService extends HttpService {
         actorRefFactory actorOf Props(new Streamer[FilterTweetJson](peer))
       }
     }~
+    pathPrefix("webapp") {get { getFromDirectory("webapp") } } ~
+    pathPrefix("index.html") { get { getFromResource("index.html") } } ~
     pathPrefix("config.js") { get { getFromResource("config.js") } } ~
     pathPrefix("vendor") { get { getFromResourceDirectory("vendor") } } ~
     pathPrefix("css") { get { getFromResourceDirectory("css") } } ~
     pathPrefix("app") { get { getFromResourceDirectory("app") } } ~
     pathPrefix("img") { get { getFromResourceDirectory("img") } } ~
-    pathPrefix("js") { get { getFromResourceDirectory("js") } }
+    pathPrefix("js") { get { getFromResourceDirectory("js") } } ~
+    pathPrefix("font") { get { getFromResourceDirectory("font") } }
 
   }
 }
