@@ -18,7 +18,6 @@ import MediaTypes._
 import MediaTypes._
 
 class ServiceActor extends Actor with ActorLogging with TweetStatService with ContentService {
-
   def actorRefFactory = context
 
   val route =
@@ -39,7 +38,7 @@ trait TweetStatService extends HttpService {
     } ~
     path("stats") {
       complete(TweetMetrics.stats)
-    }
+    } ~
     path("stream" / "filter") {
       ctx => {
         val peer = ctx.responder
