@@ -17,7 +17,7 @@ import HttpMethods._
 import MediaTypes._
 import MediaTypes._
 
-class ServiceActor extends Actor with ActorLogging with TweetStatService with ContentService {
+class ServiceActor extends Actor with ActorLogging with StatsRoute with FrontendContentRoute {
   def actorRefFactory = context
 
   val route =
@@ -27,7 +27,7 @@ class ServiceActor extends Actor with ActorLogging with TweetStatService with Co
   def receive = runRoute(route)
 }
 
-trait TweetStatService extends HttpService {
+trait StatsRoute extends HttpService {
 
   val statsRoute = {
     path("hello") {
@@ -48,7 +48,7 @@ trait TweetStatService extends HttpService {
   }
 }
 
-trait ContentService extends HttpService {
+trait FrontendContentRoute extends HttpService {
   val contentRoute = {
     path("index") { getFromResource("index.html") } ~
     pathPrefix("config.js") { get { getFromResource("config.js") } } ~
