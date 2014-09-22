@@ -14,7 +14,7 @@ package object twitterStream {
 
   val TwitterStreamingConfig = ConfigFactory.load()
 
-  implicit lazy val StreamingActorSystem: ActorSystem = ActorSystem()
+  lazy val StreamingActorSystem: ActorSystem = ActorSystem()
 
   implicit lazy val ExecutionContext: ExecutionContext = StreamingActorSystem.dispatcher
 

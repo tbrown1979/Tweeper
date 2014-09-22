@@ -9,7 +9,7 @@ object TweetMetrics {
   val reporter = ElasticsearchReporter.forRegistry(metrics)
     .hosts("localhost:9200")
     .build();
-  reporter.start(60, TimeUnit.SECONDS);
+  reporter.start(5, TimeUnit.SECONDS);
 
   val tweetsConsumed: Counter = metrics.counter(MetricRegistry.name("tweets.count"))
   def incrTweetCount = tweetsConsumed.inc
@@ -20,4 +20,6 @@ object TweetMetrics {
   def getMeanRate = tweetsRate.getMeanRate
   def getOneMinuteRate = tweetsRate.getOneMinuteRate
   def getFiveMinuteRate = tweetsRate.getFiveMinuteRate
+
+  def stats: TweetStreamStats = TweetStreamStats(getMeanRate, getTweetCount)
 }

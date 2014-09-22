@@ -16,4 +16,9 @@ sealed trait JsonToClient {
 }
 case class SampleTweetJson(json: String) extends JsonToClient
 case class FilterTweetJson(json: String) extends JsonToClient
-case class OtherJson(json: String) extends JsonToClient//just cuz
+
+case class TweetStreamStats(meanRate: Double, count: Long)
+
+object TweetStreamStats extends DefaultJsonProtocol {
+  implicit val StatsFormat = jsonFormat2(TweetStreamStats.apply)
+}

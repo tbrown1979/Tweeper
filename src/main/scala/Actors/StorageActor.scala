@@ -21,6 +21,7 @@ trait TweetPersistence {
 }
 
 trait ElasticSearchTweetPersistence extends TweetPersistence {
+  this: Actor =>
   //pull url out to application.conf
   val pipeline = sendReceive
 
@@ -35,7 +36,7 @@ trait TweetStorageActor extends Actor with ActorLogging with TweetPersistence {
   log.debug("Starting streaming response ...")
 
   def receive: Receive = {
-    case SampleTweetJson(json) =>
+    case FilterTweetJson(json) =>
       storeTweet(json)
   }
 }
