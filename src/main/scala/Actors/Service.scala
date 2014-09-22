@@ -13,6 +13,7 @@ import spray.httpx.SprayJsonSupport._
 import spray.httpx.marshalling.BasicMarshallers
 import spray.routing._
 import spray.util._
+import HttpHeaders.{`Cache-Control`, `Connection`}
 import HttpMethods._
 import MediaTypes._
 import MediaTypes._
@@ -28,6 +29,7 @@ class ServiceActor extends Actor with ActorLogging with StatsRoute with Frontend
 }
 
 trait StatsRoute extends HttpService {
+  import EventSourceService._
 
   val statsRoute = {
     path("hello") {

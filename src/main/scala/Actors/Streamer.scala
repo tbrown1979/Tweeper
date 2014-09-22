@@ -11,17 +11,32 @@ import spray.can.Http.RegisterChunkHandler
 import spray.can.server.Stats
 import spray.http._
 import spray.util._
-import HttpMethods._
+//import HttpMethods._
 import MediaTypes._
 
+object EventSourceService {
+  val `text/event-stream` = register(
+    MediaType.custom(
+      mainType = "text",
+      subType  = "event-stream"
+    )
+  )
+  // val `text/event-stream` = MediaType.custom("text/event-stream")
+
+  // MediaTypes.register(`text/event-stream`)
+}
+
 class Streamer[T <: JsonToClient: ClassTag](client: ActorRef) extends Actor with ActorLogging {
+  import EventSourceService._
+
   log.debug("Starting streaming response ...")
 
   override def preStart = {
     context.system.eventStream.subscribe(context.self, classTag[T].runtimeClass)
   }
 
-  client ! ChunkedResponseStart(HttpResponse(entity = ""))
+  val pentity = HttpEntity(`text/event-stream`, "")
+  client ! ChunkedResponseStart(HttpResponse(entity = pentity))
 
   def receive = {
     case jsonModel: T =>
