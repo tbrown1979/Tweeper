@@ -35,7 +35,7 @@ class Streamer[T <: JsonToClient: ClassTag](client: ActorRef) extends Actor with
     context.system.eventStream.subscribe(context.self, classTag[T].runtimeClass)
   }
 
-  val pentity = HttpEntity(`text/event-stream`, "")
+  val pentity = HttpEntity(`text/event-stream`, "data:test")
   client ! ChunkedResponseStart(HttpResponse(entity = pentity))
 
   def receive = {
