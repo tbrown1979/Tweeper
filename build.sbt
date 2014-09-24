@@ -20,4 +20,6 @@ libraryDependencies ++= {
   )
 }
 
+Revolver.settings
+
 scalacOptions += "-deprecation"

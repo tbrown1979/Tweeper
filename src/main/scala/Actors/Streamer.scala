@@ -13,6 +13,10 @@ import spray.http._
 import spray.util._
 //import HttpMethods._
 import MediaTypes._
+import spray.routing.directives.RespondWithDirectives._
+import spray.http.ContentTypes._
+import HttpHeaders.{`Cache-Control`, `Connection`}
+import CacheDirectives.`no-cache`
 
 object EventSourceService {
   val `text/event-stream` = register(
@@ -24,6 +28,12 @@ object EventSourceService {
   // val `text/event-stream` = MediaType.custom("text/event-stream")
 
   // MediaTypes.register(`text/event-stream`)
+
+  def respondAsEventStream = {//needed?
+    respondWithHeader(`Cache-Control`(`no-cache`)) &
+    respondWithHeader(`Connection`("Keep-Alive")) &
+    respondWithMediaType(`text/event-stream`)
+  }
 }
 
 class Streamer[T <: JsonToClient: ClassTag](client: ActorRef) extends Actor with ActorLogging {
@@ -35,14 +45,14 @@ class Streamer[T <: JsonToClient: ClassTag](client: ActorRef) extends Actor with
     context.system.eventStream.subscribe(context.self, classTag[T].runtimeClass)
   }
 
-  val pentity = HttpEntity(`text/event-stream`, "data:test")
-  client ! ChunkedResponseStart(HttpResponse(entity = pentity))
+  val entity = HttpEntity("data:test")
+  client ! ChunkedResponseStart(HttpResponse(entity=entity))
 
   def receive = {
     case jsonModel: T =>
       val json = jsonModel.json
-      log.info("Sending Tweet json!")
-      client ! MessageChunk(json)
+      //log.info("Sending Tweet json!")
+      client ! MessageChunk("data:" + json + "\n\n")
 
     case x: Http.ConnectionClosed =>
       log.info("Canceling response stream due to {} ...", x)
