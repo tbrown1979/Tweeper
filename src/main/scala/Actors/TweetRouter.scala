@@ -14,10 +14,10 @@ class TweetRouterActor extends Actor with ActorLogging {
 
   def receive: Receive = {
     case tj: SampleTweetJson =>
-      //metricActor ! TrackTweet
+      metricActor ! TrackTweet
 
     case ft: FilterTweetJson =>
-      //storageActor ! ft
+      storageActor ! ft
       context.system.eventStream.publish(ft)
   }
 

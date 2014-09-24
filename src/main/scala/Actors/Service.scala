@@ -13,7 +13,7 @@ import spray.httpx.SprayJsonSupport._
 import spray.httpx.marshalling.BasicMarshallers
 import spray.routing._
 import spray.util._
-import HttpHeaders.{`Cache-Control`, `Connection`}
+import HttpHeaders._
 import HttpMethods._
 import MediaTypes._
 import MediaTypes._
@@ -39,7 +39,9 @@ trait StatsRoute extends HttpService {
       complete("PONG!")
     } ~
     path("stats") {
-      complete(TweetMetrics.stats)
+      respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
+        complete(TweetMetrics.stats)
+      }
     } ~
     path("stream" / "filter") {
       respondAsEventStream {

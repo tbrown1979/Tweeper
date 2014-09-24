@@ -1,8 +1,9 @@
 package com.tbrown.twitterStream
 import com.codahale.metrics._
-import org.elasticsearch.metrics.ElasticsearchReporter
 import java.util.concurrent.TimeUnit
+import org.elasticsearch.metrics.ElasticsearchReporter
 import scala.concurrent.duration.TimeUnit
+import spray.json._
 
 object TweetMetrics {
   val metrics = new MetricRegistry
@@ -21,5 +22,6 @@ object TweetMetrics {
   def getOneMinuteRate = tweetsRate.getOneMinuteRate
   def getFiveMinuteRate = tweetsRate.getFiveMinuteRate
 
-  def stats: TweetStreamStats = TweetStreamStats(getMeanRate, getTweetCount)
+  def stats: StreamStats = StreamStats(getOneMinuteRate, getTweetCount)
+  def statsAsJsonString = stats.toJson.toString
 }

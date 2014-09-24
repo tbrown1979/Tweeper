@@ -19,15 +19,11 @@ import HttpHeaders.{`Cache-Control`, `Connection`}
 import CacheDirectives.`no-cache`
 
 object EventSourceService {
-  val `text/event-stream` = register(
-    MediaType.custom(
-      mainType = "text",
-      subType  = "event-stream"
-    )
-  )
-  // val `text/event-stream` = MediaType.custom("text/event-stream")
+  val `text/event-stream` = MediaType.custom("text/event-stream")
+  MediaTypes.register(`text/event-stream`)
 
-  // MediaTypes.register(`text/event-stream`)
+  def formatAsSSE(data: String): String =
+    s"data:$data\n\n"
 
   def respondAsEventStream = {//needed?
     respondWithHeader(`Cache-Control`(`no-cache`)) &
@@ -45,14 +41,14 @@ class Streamer[T <: JsonToClient: ClassTag](client: ActorRef) extends Actor with
     context.system.eventStream.subscribe(context.self, classTag[T].runtimeClass)
   }
 
-  val entity = HttpEntity("data:test")
+  val entity = HttpEntity(":\n\n")
   client ! ChunkedResponseStart(HttpResponse(entity=entity))
 
   def receive = {
     case jsonModel: T =>
       val json = jsonModel.json
-      //log.info("Sending Tweet json!")
-      client ! MessageChunk("data:" + json + "\n\n")
+      log.info("Sending Tweet json!")
+      client ! MessageChunk(formatAsSSE(json))
 
     case x: Http.ConnectionClosed =>
       log.info("Canceling response stream due to {} ...", x)

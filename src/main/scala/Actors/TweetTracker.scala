@@ -6,6 +6,8 @@ import akka.actor._
 import spray.json._
 import DefaultJsonProtocol._
 
+case object PublishMetrics
+
 class TweetTrackerActor extends Actor with ActorLogging {
 
   def receive: Receive = {
