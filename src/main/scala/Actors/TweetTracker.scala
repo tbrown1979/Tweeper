@@ -9,6 +9,7 @@ import DefaultJsonProtocol._
 case object PublishMetrics
 
 class TweetTrackerActor extends Actor with ActorLogging {
+  context.system.scheduler.schedule(0 seconds, 5 seconds, self, PublishStats)
 
   def receive: Receive = {
     case TrackTweet =>
@@ -16,6 +17,10 @@ class TweetTrackerActor extends Actor with ActorLogging {
         TweetMetrics.incrTweetCount
         TweetMetrics.markTweet
       }
+
+    case PublishStats =>
+      context.system.eventStream.publish(StatsJson(TweetMetrics.statsAsJsonString))
+
     case ReportMetrics =>
       log.info(
         s"Tweet Count: ${TweetMetrics.getTweetCount}\n" +

@@ -8,6 +8,7 @@ import DateTimeJsonProtocol._
 case object Report
 case object ReportMetrics
 case object TrackTweet
+case object PublishStats
 case class RouteTweet(json: String)
 case class TweetWithJson(tweet: Tweet, json: String)
 
@@ -16,6 +17,7 @@ sealed trait JsonToClient {
 }
 case class SampleTweetJson(json: String) extends JsonToClient
 case class FilterTweetJson(json: String) extends JsonToClient
+case class StatsJson(json: String) extends JsonToClient
 
 case class StreamStats(avg: Double, count: Long)
 

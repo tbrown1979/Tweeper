@@ -40,7 +40,12 @@ trait StatsRoute extends HttpService {
     } ~
     path("stats") {
       respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
-        complete(TweetMetrics.stats)
+        respondAsEventStream {
+          ctx => {
+            val peer = ctx.responder
+            actorRefFactory actorOf Props(new Streamer[StatsJson](peer))
+          }
+        }//complete(TweetMetrics.stats)
       }
     } ~
     path("stream" / "filter") {
