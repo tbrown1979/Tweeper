@@ -1,6 +1,8 @@
 package com.tbrown.twitterStream
 import akka.actor._
+import spray.json._
 import twitter4j._
+import DefaultJsonProtocol._
 
 
 object Util {
@@ -20,12 +22,13 @@ object Util {
     def onScrubGeo(arg0: Long, arg1: Long) {}
     def onStallWarning(stallWarning: StallWarning) {}
   }
-
+  //get rid of duplication
   def filterStatusListener(router: ActorRef) =
     defaultStatusListener(
       (status: Status) => {
         val json = TwitterObjectFactory.getRawJSON(status)
-        router ! FilterTweetJson(json)
+        //router ! FilterTweetJson(json)
+        router ! json.toJson.convertTo[Tweet]
       }
     )
 
@@ -33,7 +36,8 @@ object Util {
     defaultStatusListener(
       (status: Status) => {
         val json = TwitterObjectFactory.getRawJSON(status)
-        router ! SampleTweetJson(json)
+        //router ! SampleTweetJson(json)
+        router ! json.toJson.convertTo[Tweet]
       }
     )
 }

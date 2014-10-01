@@ -45,10 +45,9 @@ class Streamer[T <: JsonToClient: ClassTag](client: ActorRef) extends Actor with
   client ! ChunkedResponseStart(HttpResponse(entity=entity))
 
   def receive = {
-    case jsonModel: T =>
-      val json = jsonModel.json
+    case t: Tweet =>
       log.info("Sending Tweet json!")
-      client ! MessageChunk(formatAsSSE(json))
+      client ! MessageChunk(t.toJson.toString)
 
     case x: Http.ConnectionClosed =>
       log.info("Canceling response stream due to {} ...", x)

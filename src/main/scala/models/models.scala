@@ -12,12 +12,14 @@ case object PublishStats
 case class RouteTweet(json: String)
 case class TweetWithJson(tweet: Tweet, json: String)
 
-sealed trait JsonToClient {
-  val json: String
-}
-case class SampleTweetJson(json: String) extends JsonToClient
-case class FilterTweetJson(json: String) extends JsonToClient
-case class StatsJson(json: String) extends JsonToClient
+case class PersistTweet(tweet: Tweet)
+
+// sealed trait JsonToClient {
+//   val json: String
+// }
+// case class SampleTweetJson(json: String) extends JsonToClient
+// case class FilterTweetJson(json: String) extends JsonToClient
+// case class StatsJson(json: String) extends JsonToClient
 
 case class StreamStats(avg: Double, count: Long)
 

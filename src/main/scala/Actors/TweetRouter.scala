@@ -13,12 +13,12 @@ class TweetRouterActor extends Actor with ActorLogging {
   val deadLetters  = StreamingActorSystem.deadLetters
 
   def receive: Receive = {
-    case tj: SampleTweetJson =>
+    case t: Tweet =>
       metricActor ! TrackTweet
 
-    case ft: FilterTweetJson =>
-      storageActor ! ft
-      context.system.eventStream.publish(ft)
+    case PersistTweet(t) =>
+      storageActor ! t
+      context.system.eventStream.publish(t)
   }
 
   context.system.scheduler.schedule(0 seconds, 5 seconds, metricActor, ReportMetrics)
