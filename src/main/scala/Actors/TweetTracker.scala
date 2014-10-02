@@ -19,7 +19,7 @@ class TweetTrackerActor extends Actor with ActorLogging {
       }
 
     case PublishStats =>
-      context.system.eventStream.publish(StatsJson(TweetMetrics.statsAsJsonString))
+      context.system.eventStream.publish(TweetMetrics.stats)
 
     case ReportMetrics =>
       log.info(

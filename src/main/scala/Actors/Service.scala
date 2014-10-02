@@ -43,7 +43,7 @@ trait StatsRoute extends HttpService {
         respondAsEventStream {
           ctx => {
             val peer = ctx.responder
-            actorRefFactory actorOf Props(new Streamer[StatsJson](peer))
+            actorRefFactory actorOf Props(new Streamer[StreamStats](peer))
           }
         }//complete(TweetMetrics.stats)
       }
@@ -52,7 +52,7 @@ trait StatsRoute extends HttpService {
       respondAsEventStream {
         ctx => {
           val peer = ctx.responder
-          actorRefFactory actorOf Props(new Streamer[FilterTweetJson](peer))
+          actorRefFactory actorOf Props(new Streamer[Tweet](peer))
         }
       }
     }

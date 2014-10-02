@@ -13,6 +13,7 @@ import spray.can.server.Stats
 import spray.client.pipelining._
 import spray.http._
 import spray.util._
+import spray.json._
 import HttpMethods._
 import MediaTypes._
 
@@ -36,7 +37,7 @@ trait TweetStorageActor extends Actor with ActorLogging with TweetPersistence {
   log.debug("Starting streaming response ...")
 
   def receive: Receive = {
-    case FilterTweetJson(json) =>
-      storeTweet(json)
+    case t: Tweet =>
+      storeTweet(t.toJson.toString)
   }
 }

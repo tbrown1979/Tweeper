@@ -7,20 +7,20 @@ import spray.json._
 import DefaultJsonProtocol._
 
 
-class TopicCheckerActor extends Actor with ActorLogging with TopicsConfig {
+// class TopicCheckerActor extends Actor with ActorLogging with TopicsConfig {
 
-  def parseToTweet(json: String): Tweet =
-    JsonParser(json).convertTo[Tweet]
+//   def parseToTweet(json: String): Tweet =
+//     JsonParser(json).convertTo[Tweet]
 
-  def logInfoFuture[A](f: Future[A], success: String, failure: String) =
-    f onComplete {
-      case Success(s) => log.info(success)
-      case Failure(e) => log.error(failure)
-    }
+//   def logInfoFuture[A](f: Future[A], success: String, failure: String) =
+//     f onComplete {
+//       case Success(s) => log.info(success)
+//       case Failure(e) => log.error(failure)
+//     }
 
-  def receive: Receive = {
-    case tj@FilterTweetJson(json) =>
-      context.system.eventStream.publish(tj)
-  }
+//   def receive: Receive = {
+//     case tj@FilterTweetJson(json) =>
+//       context.system.eventStream.publish(tj)
+//   }
 
-}
+// }

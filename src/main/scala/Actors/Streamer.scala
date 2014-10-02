@@ -11,6 +11,7 @@ import spray.can.Http.RegisterChunkHandler
 import spray.can.server.Stats
 import spray.http._
 import spray.util._
+import spray.json._
 //import HttpMethods._
 import MediaTypes._
 import spray.routing.directives.RespondWithDirectives._
@@ -32,7 +33,7 @@ object EventSourceService {
   }
 }
 
-class Streamer[T <: JsonToClient: ClassTag](client: ActorRef) extends Actor with ActorLogging {
+class Streamer[T: ClassTag](client: ActorRef) extends Actor with ActorLogging {
   import EventSourceService._
 
   log.debug("Starting streaming response ...")
@@ -44,13 +45,23 @@ class Streamer[T <: JsonToClient: ClassTag](client: ActorRef) extends Actor with
   val entity = HttpEntity(":\n\n")
   client ! ChunkedResponseStart(HttpResponse(entity=entity))
 
+  def streamToClient[A](toStream: A): Unit =
+    client ! MessageChunk(toStream.toString)
+
   def receive = {
+    case s: StreamStats =>
+      streamToClient(s.toJson)
+
     case t: Tweet =>
       log.info("Sending Tweet json!")
-      client ! MessageChunk(t.toJson.toString)
+      streamToClient(t.toJson)
 
     case x: Http.ConnectionClosed =>
       log.info("Canceling response stream due to {} ...", x)
       context.stop(self)
+
+    case x =>
+      log.info("Don't recognize, but streaming anyway!")
+      streamToClient(x)
   }
 }

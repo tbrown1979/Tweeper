@@ -27,8 +27,7 @@ object Util {
     defaultStatusListener(
       (status: Status) => {
         val json = TwitterObjectFactory.getRawJSON(status)
-        //router ! FilterTweetJson(json)
-        router ! json.toJson.convertTo[Tweet]
+        router ! JsonParser(json).convertTo[Tweet]
       }
     )
 
@@ -36,8 +35,7 @@ object Util {
     defaultStatusListener(
       (status: Status) => {
         val json = TwitterObjectFactory.getRawJSON(status)
-        //router ! SampleTweetJson(json)
-        router ! json.toJson.convertTo[Tweet]
+        router ! JsonParser(json).convertTo[Tweet]
       }
     )
 }
