@@ -15,5 +15,5 @@ case class PersistTweet(tweet: Tweet)
 case class StreamStats(avg: Double, count: Long)
 
 object StreamStats extends DefaultJsonProtocol {
-  implicit val StatsFormat = jsonFormat2(StreamStats.apply)
+  implicit val formats = jsonFormat2(StreamStats.apply)
 }

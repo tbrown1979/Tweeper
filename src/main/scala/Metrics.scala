@@ -23,5 +23,4 @@ object TweetMetrics {
   def getFiveMinuteRate = tweetsRate.getFiveMinuteRate
 
   def stats: StreamStats = StreamStats(getOneMinuteRate, getTweetCount)
-  def statsAsJsonString = stats.toJson.toString
 }
