@@ -26,6 +26,8 @@ var chartRT = function () {
   _self.yText = '';
   _self.titleText = '';
   _self.chartSeries = {};
+  _self.backFillValue = 47;
+  _self.extent = [47,47];
 
   _self.Init = function () {
     d3.select('#chart-' + _self.guid).remove();
@@ -167,12 +169,14 @@ var chartRT = function () {
       .data(_self.DataSeries)
       .enter().append("g")
       .attr("class", "Legend");
+
     _self.Legend.append("circle")
       .attr("r", 4)
       .style("fill", function (d) { return _self.color(d.Name); })
       .style("fill-opacity", .5)
       .style("stroke", function (d) { return _self.color(d.Name); })
       .attr("transform", function (d, i) { return "translate(" + (_self.width + 6) + "," + (10 + (i * 20)) + ")"; });
+
     _self.Legend.append("text")
       .text(function (d) { return d.Name; })
       .attr("dx", "0.5em")
@@ -201,45 +205,54 @@ var chartRT = function () {
         _self.DataSeries[i].Data.push({ Value: _self.chartSeries[_self.DataSeries[i].Name] });
         //Backfill missing values
         while (_self.DataSeries[i].Data.length -1<_self.Ticks+3 ) {
-          _self.DataSeries[i].Data.unshift({ Value: 0 })
+          _self.DataSeries[i].Data.unshift({ Value: _self.backFillValue })
         }
       }
-
-      var adjustmentTime = 1000;
-
-      var extent = d3.extent(_self.DataSeries[0].Data, function(d) { return d.Value; });
-      _self.yscale.domain(extent)
+      var scaleArea = false;
+      var newExtent = d3.extent(_self.DataSeries[0].Data, function(d) { return d.Value; });
+      function extentChanged(newExtent, old) {
+        return newExtent[0] < _self.extent[0] || newExtent[1] > _self.extent[1]
+      }
+      //if changed, set the new extent, and set true to change the area scale size
+      if (extentChanged(newExtent, _self.extent)) {
+        _self.extent = d3.extent(_self.DataSeries[0].Data, function(d) { return d.Value; });
+        var scaleArea = true;
+      }
+      //change domain to match max/min values in data
+      _self.yscale.domain(_self.extent);
 
       _self.yaxis.transition()
-        .duration(adjustmentTime)
+        .duration(_self.TickDuration)
         .ease("linear")
         .call(_self.yAxis);
-
-      _self.path
-        .transition()
-        .duration(adjustmentTime)
-        .attr("d", function (d) { return _self.area(d.Data); })
-        .attr("transform", null);
 
       d3.select("#yName-" + _self.guid).text(_self.yText);
       d3.select("#xName-" + _self.guid).text(_self.xText);
       d3.select("#title-" + _self.guid).text(_self.titleText);
 
-      _self.path
-        .attr("d", function (d) {  return _self.area(d.Data); })
-        .attr("transform", null)
-        .transition()
-        .duration(_self.TickDuration)
-        .ease("linear")
-        .attr("transform", "translate(" + _self.xscale(-1) + ",0)")
-        .each("end", function (d, i) { _self.tick(i); });
+      if (scaleArea) {
+        _self.path.transition()
+          .ease("linear")
+          .duration(5000)
+          .attr("d", function (d) {  return _self.area(d.Data); })
+          .attr("transform", null)
+          .attr("transform", "translate(" + _self.xscale(-1) + ",0)")
+          .each("end", function (d, i) { _self.tick(i); });
+      } else {
+        _self.path
+          .attr("d", function (d) {  return _self.area(d.Data); })
+          .attr("transform", null)
+          .transition()
+          .ease("linear")
+          .attr("transform", "translate(" + _self.xscale(-1) + ",0)")
+          .duration(_self.TickDuration)
+          .each("end", function (d, i) { _self.tick(i); });
+      }
+
       //Remove oldest values
       for (i in _self.DataSeries) {
         _self.DataSeries[i].Data.shift();
       }
-
-
-
     }
     _self.firstTick = new Date();
     _self.lastTick = new Date();
@@ -252,8 +265,8 @@ var chartRT = function () {
     _self.start();
   }
   _self.addSeries = function (SeriesName) {
-    _self.chartSeries[SeriesName] = 0;
-    _self.DataSeries.push({ Name: SeriesName, Data: [{ Value: 0}] });
+    _self.chartSeries[SeriesName] = _self.backFillValue;
+    _self.DataSeries.push({ Name: SeriesName, Data: [{ Value: _self.backFillValue}] });
     _self.Init();
   }
 }
@@ -264,52 +277,19 @@ var chartRT = function () {
 //
 //
 //
-//
-//
-// var chart = new chartRT();
-// chart.xText = "Seconds";
-// chart.yText = "Value";
-// chart.titleText = "Random ODD Series";
-// chart.Ticks = 60;
-//chart.Init();
 
-var chart2 = new chartRT();
-chart2.xText = "Seconds";
-chart2.yText = "Value";
-chart2.titleText = "Tweets Per Second";
-chart2.Ticks = 20;
-chart2.TickDuration = 5000;
-chart2.MaxValue = 60;
-
-// var Sequence = 0;
-
-// var GenRandomSequence = function () {
-
-//   Sequence++;
-//   chart.addSeries("Random_" + Sequence)
-//   //Sequence++;
-//   chart2.addSeries("Random_" + Sequence)
-//   if (Sequence < 5) {
-//     setTimeout(GenRandomSequence, 3000);
-//   }
-// }
-// setTimeout(GenRandomSequence, 1000);
+var chart = new chartRT();
+chart.xText = "Seconds";
+chart.yText = "Value";
+chart.titleText = "Tweets Per Second";
+chart.Ticks = 5;
+chart.TickDuration = 5000;
+chart.MaxValue = 60;
 
 var series = "tweets";
-chart2.addSeries(series);
+chart.addSeries(series);
 var source = new EventSource("http://localhost:8081/stats");
 source.onmessage = function(event) {
   var json = JSON.parse(event.data);
   chart2.chartSeries[series] = json.avg;
 };
-
-
-// var update = function () {
-//   for (Name in chart.chartSeries) {
-//     var random = Math.random() * 10;
-//     chart.chartSeries[Name] = random;
-//     chart2.chartSeries[Name] = random;
-//   }
-//   setTimeout(update, 1000);
-// }
-// setTimeout(update, 1000);

@@ -45,7 +45,7 @@ class Streamer[T: JsonWriter: ClassTag](client: ActorRef) extends Actor with Act
   client ! ChunkedResponseStart(HttpResponse(entity=entity))
 
   def streamToClient[A](toStream: A): Unit =
-    client ! MessageChunk(toStream.toString)
+    client ! MessageChunk(formatAsSSE(toStream.toString))
 
   def receive = {
     case t: T => streamToClient(t.toJson)
