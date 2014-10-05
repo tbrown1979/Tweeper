@@ -22,4 +22,4 @@ libraryDependencies ++= {
 
 Revolver.settings
 
-scalacOptions += "-feature"
+scalacOptions += "-deprecation"

@@ -27,7 +27,7 @@ object Util {
     defaultStatusListener(
       (status: Status) => {
         val json = TwitterObjectFactory.getRawJSON(status)
-        router ! JsonParser(json).convertTo[Tweet]
+        router ! PersistTweet(JsonParser(json).convertTo[Tweet])
       }
     )
 

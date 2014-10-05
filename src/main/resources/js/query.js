@@ -282,7 +282,7 @@ var chart = new chartRT();
 chart.xText = "Seconds";
 chart.yText = "Value";
 chart.titleText = "Tweets Per Second";
-chart.Ticks = 5;
+chart.Ticks = 20;
 chart.TickDuration = 5000;
 chart.MaxValue = 60;
 
@@ -291,5 +291,5 @@ chart.addSeries(series);
 var source = new EventSource("http://localhost:8081/stats");
 source.onmessage = function(event) {
   var json = JSON.parse(event.data);
-  chart2.chartSeries[series] = json.avg;
+  chart.chartSeries[series] = json.avg;
 };

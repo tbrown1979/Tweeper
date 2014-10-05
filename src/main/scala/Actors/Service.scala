@@ -47,12 +47,23 @@ trait StatsRoute extends HttpService {
           }
         }//complete(TweetMetrics.stats)
       }
-    } ~
-    path("stream" / "filter") {
-      respondAsEventStream {
-        ctx => {
-          val peer = ctx.responder
-          actorRefFactory actorOf Props(new Streamer[Tweet](peer))
+    } ~//duplication
+    pathPrefix("stream" / "filter") {
+      respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
+        respondAsEventStream {
+          pathEnd {
+            ctx => {
+              val peer = ctx.responder
+              actorRefFactory actorOf Props(new Streamer[Tweet](peer))
+            }
+          } ~
+          path(Segment) { filterTerm =>
+            println(filterTerm)
+            ctx => {
+              val peer = ctx.responder
+              actorRefFactory actorOf Props(new Streamer[Tweet](peer))
+            }
+          }
         }
       }
     }
