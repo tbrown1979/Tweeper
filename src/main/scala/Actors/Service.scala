@@ -52,7 +52,16 @@ trait StatsRoute extends HttpService {
     path("ping") {
       complete("PONG!")
     } ~
-    streamRoute("stats", (peer: ActorRef) => new GenericStreamer[StreamStats](peer)) ~//duplication
+    path("stats") {
+      respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
+        respondAsEventStream {
+          ctx => {
+            val peer = ctx.responder
+            actorRefFactory actorOf Props(new GenericStreamer[StreamStats](peer))
+          }
+        }//complete(TweetMetrics.stats)
+      }
+    } ~//duplication
     pathPrefix("stream" / "filter") {
       respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
         respondAsEventStream {

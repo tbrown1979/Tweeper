@@ -55,7 +55,7 @@ abstract class Streamer[T: JsonWriter: ClassTag](client: ActorRef) extends Actor
       context.stop(self)
   }
 
-  def receive = streamerReceive andThen streamClosed
+  def receive = streamerReceive orElse streamClosed
 }
 
 class GenericStreamer[T: JsonWriter: ClassTag](client: ActorRef) extends Streamer[T](client) {
