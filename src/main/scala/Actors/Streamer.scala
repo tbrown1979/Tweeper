@@ -32,7 +32,7 @@ object EventSourceService {
   }
 }
 
-class Streamer[T: JsonWriter: ClassTag](client: ActorRef) extends Actor with ActorLogging {
+abstract class Streamer[T: JsonWriter: ClassTag](client: ActorRef) extends Actor with ActorLogging {
   import EventSourceService._
 
   log.debug("Starting streaming response ...")
@@ -44,14 +44,29 @@ class Streamer[T: JsonWriter: ClassTag](client: ActorRef) extends Actor with Act
   val entity = HttpEntity(":\n\n")
   client ! ChunkedResponseStart(HttpResponse(entity=entity))
 
-  def streamToClient[A](toStream: A): Unit =
-    client ! MessageChunk(formatAsSSE(toStream.toString))
+  def streamToClient[A: JsonWriter](toStream: A): Unit =
+    client ! MessageChunk(formatAsSSE(toStream.toJson.toString))
 
-  def receive = {
-    case t: T => streamToClient(t.toJson)
+  def streamerReceive: Receive
 
+  def streamClosed: Receive =  {
     case x: Http.ConnectionClosed =>
       log.info("Canceling response stream due to {} ...", x)
       context.stop(self)
+  }
+
+  def receive = streamerReceive andThen streamClosed
+}
+
+class GenericStreamer[T: JsonWriter: ClassTag](client: ActorRef) extends Streamer[T](client) {
+  def streamerReceive: Receive = {
+    case t: T => streamToClient(t)
+  }
+}
+
+class FilterTweetStreamer(client: ActorRef, term: String) extends Streamer[Tweet](client) {
+  def containsTerm(t: Tweet): Boolean = t.text.contains(term)
+  def streamerReceive: Receive = {
+    case t: Tweet => if (containsTerm(t)) streamToClient(t)
   }
 }
