@@ -18,34 +18,31 @@ import HttpMethods._
 import MediaTypes._
 import MediaTypes._
 
-class ServiceActor extends Actor with ActorLogging with StatsRoute with FrontendContentRoute {
+class ServiceActor extends Actor with ActorLogging with ServiceRoute with FrontendContentRoute {
   def actorRefFactory = context
 
   val route =
     contentRoute ~
-    statsRoute
+    serviceRoute
 
   def receive = runRoute(route)
 }
 
-trait StatsRoute extends HttpService {
+trait ServiceRoute extends HttpService {
   import EventSourceService._
 
-  def streamRoute[T](stringPath: String, streamer: ActorRef => Streamer[T]) = {
-    path(stringPath) {
-      respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
-        respondAsEventStream {
-          ctx => {
-            val peer = ctx.responder
-            actorRefFactory actorOf Props(streamer(peer))
-          }
+  def streamRoute[T](streamer: ActorRef => Streamer[T]) = {
+    respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
+      respondAsEventStream {
+        ctx => {
+          val peer = ctx.responder
+          actorRefFactory actorOf Props(streamer(peer))
         }
       }
     }
   }
 
-
-  val statsRoute = {
+  val serviceRoute = {
     path("hello") {
       getFromResource("index.html")
     } ~
@@ -53,32 +50,14 @@ trait StatsRoute extends HttpService {
       complete("PONG!")
     } ~
     path("stats") {
-      respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
-        respondAsEventStream {
-          ctx => {
-            val peer = ctx.responder
-            actorRefFactory actorOf Props(new GenericStreamer[StreamStats](peer))
-          }
-        }//complete(TweetMetrics.stats)
-      }
-    } ~//duplication
+      streamRoute((peer: ActorRef) => new GenericStreamer[StreamStats](peer))
+    } ~
     pathPrefix("stream" / "filter") {
-      respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
-        respondAsEventStream {
-          pathEnd {
-            ctx => {
-              val peer = ctx.responder
-              actorRefFactory actorOf Props(new GenericStreamer[Tweet](peer))
-            }
-          } ~
-          path(Segment) { filterTerm =>
-            println(filterTerm)
-            ctx => {
-              val peer = ctx.responder
-              actorRefFactory actorOf Props(new FilterTweetStreamer(peer, filterTerm))
-            }
-          }
-        }
+      pathEnd {
+        streamRoute((peer: ActorRef) => new GenericStreamer[Tweet](peer))
+      } ~
+      path(Segment) { filterTerm =>
+        streamRoute((peer: ActorRef) => new FilterTweetStreamer(peer, filterTerm))
       }
     }
   }
