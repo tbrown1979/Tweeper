@@ -60,6 +60,18 @@ trait ServiceRoute extends HttpService {
         val termList: List[String] = terms.split("\\+").toList.map(_.toLowerCase)//use unmarshalling?
         streamRoute((peer: ActorRef) => new FilterTweetStreamer(peer, termList))
       }
+    } ~
+    pathPrefix("top") {
+      path("emojis") {
+        respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
+        complete(EmojiTracker.topElements(3))
+        }
+      } ~
+      path("hashtags") {
+        respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
+        complete(HashtagTracker.topElements(3).map(hts => hts.map(Hashtag(_))))
+        }
+      }
     }
   }
 }

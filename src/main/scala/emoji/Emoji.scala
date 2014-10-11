@@ -14,13 +14,15 @@ object Emoji extends DefaultJsonProtocol {
   lazy val allEmojis: List[Emoji] = getEmojis
 
   def findEmojis(text: String) = {
-    allEmojis.foldLeft(List[Emoji]())((b, a) => {
-      if (text.contains(a.toString)) a :: b else b
-    })
+    Emojis(
+      allEmojis.foldLeft(List[Emoji]())((b, a) => {
+        if (text.contains(a.toString)) a :: b else b
+      })
+    )
   }
 
-  private val getEmojis: List[Emoji] = {
-    val source = scala.io.Source.fromFile("src/main/scala/emoji_pretty.json")
+  private def getEmojis: List[Emoji] = {
+    val source = scala.io.Source.fromFile("src/main/scala/emoji/emoji_pretty.json")
     val file = source.getLines mkString "\n"
     source.close()
     val emojiJson = JsonParser(file)
@@ -28,4 +30,15 @@ object Emoji extends DefaultJsonProtocol {
   }
 
   implicit val EmojiFormat = jsonFormat1(Emoji.apply)
+  implicit object EmojiJsonFormat extends RootJsonFormat[Emoji] {
+    def write(e: Emoji) = JsObject(
+      "emoji" -> JsString(e.toString)
+    )
+    def read(value: JsValue): Emoji = {
+      value.asJsObject.getFields("unified") match {
+        case Seq(JsString(unified)) =>
+          new Emoji(unified)
+      }
+    }
+  }
 }

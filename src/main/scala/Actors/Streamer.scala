@@ -25,7 +25,7 @@ object EventSourceService {
   def formatAsSSE(data: String): String =
     s"data:$data\n\n"
 
-  def respondAsEventStream = {//needed?
+  def respondAsEventStream = {
     respondWithHeader(`Cache-Control`(`no-cache`)) &
     respondWithHeader(`Connection`("Keep-Alive")) &
     respondWithMediaType(`text/event-stream`)

@@ -27,7 +27,10 @@ object Util {
     defaultStatusListener(
       (status: Status) => {
         val json = TwitterObjectFactory.getRawJSON(status)
-        router ! PersistTweet(JsonParser(json).convertTo[Tweet])
+        val tweet = JsonParser(json).convertTo[Tweet]
+        val hashtags = Hashtags(status.getHashtagEntities.toList.map(_.getText))
+        val emojis = Emoji.findEmojis(status.getText)
+        router ! FilterStreamTweet(tweet, hashtags, emojis)
       }
     )
 
@@ -35,7 +38,10 @@ object Util {
     defaultStatusListener(
       (status: Status) => {
         val json = TwitterObjectFactory.getRawJSON(status)
-        router ! JsonParser(json).convertTo[Tweet]
+        val tweet = JsonParser(json).convertTo[Tweet]
+        val hashtags = Hashtags(status.getHashtagEntities.toList.map(_.getText))
+        val emojis = Emoji.findEmojis(status.getText)
+        router ! SampleStreamTweet(tweet, hashtags, emojis)
       }
     )
 }
