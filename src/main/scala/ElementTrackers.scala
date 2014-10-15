@@ -26,14 +26,14 @@ trait ElementCounter[A] {
 }
 
 trait ElementCounterThatManagesMemory[A] extends ElementCounter[A] {
-  private val arbitraryDeletionMin = 5
+  private val arbitraryDeletionMinimum = 5
   private var lastClear = currentTime
   private def currentTime = (System.currentTimeMillis / 1000.0)
   private def totalWipe = map = collection.mutable.Map[A, Int]()
-  private def timeToClear = (currentTime - lastClear) > 10
+  private def timeToClear = (currentTime - lastClear) > 120
   private def clearOldData =
     if (timeToClear) {
-      map = map.filter(_._2 > arbitraryDeletionMin)
+      map = map.filter(_._2 > arbitraryDeletionMinimum)
       lastClear = currentTime
     }
 
