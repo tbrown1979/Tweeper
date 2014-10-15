@@ -64,13 +64,20 @@ class GenericStreamer[T: JsonWriter: ClassTag](client: ActorRef) extends Streame
   }
 }
 
-class FilterTweetStreamer(client: ActorRef, terms: List[String]) extends Streamer[Tweet](client) {
+class TweetStreamer(client: ActorRef, terms: List[String] = Nil, lang: Option[String] = None) extends Streamer[Tweet](client) {
   def isTerm(word: String): Boolean = terms.contains(word.toLowerCase)
+  def matchLang(t: Tweet): Boolean = lang.fold(true)(_ == t.lang)
+  def tweetHasMatchedTerms(t: Tweet): Boolean = {
+    if (terms.isEmpty) true
+    else {
+      val tweetWords: List[String] = t.text.split(" ").toList
+      tweetWords.foldLeft(false)((matched, word) => isTerm(word) || matched)
+    }
+  }
   def streamerReceive: Receive = {
     case t: Tweet =>
       future {
-        val tweetWords: List[String] = t.text.split(" ").toList
-        tweetWords.foldLeft(false)((matched, word) => isTerm(word) || matched)
+        tweetHasMatchedTerms(t) && matchLang(t)
       } onComplete {
         case Success(p) => if (p) streamToClient(t)
         case Failure(e) => log.error(s"Filter Streamer Failure: $e")

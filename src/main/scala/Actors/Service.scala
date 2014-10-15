@@ -54,11 +54,12 @@ trait ServiceRoute extends HttpService {
     } ~
     pathPrefix("stream" / "filter") {
       pathEnd {
-        streamRoute((peer: ActorRef) => new GenericStreamer[Tweet](peer))
+        streamRoute((peer: ActorRef) => new TweetStreamer(peer))
       } ~
-      parameters('terms) { (terms) =>
-        val termList: List[String] = terms.split("\\+").toList.map(_.toLowerCase)//use unmarshalling?
-        streamRoute((peer: ActorRef) => new FilterTweetStreamer(peer, termList))
+      parameters('lang.?, 'terms.?) { (lang, terms) =>
+        val termList: List[String] =
+          terms.fold(List[String]())(_.split("\\+").toList.map(t => t.toLowerCase))//use unmarshalling?
+        streamRoute((peer: ActorRef) => new TweetStreamer(peer, termList, lang))
       }
     } ~
     pathPrefix("top") {

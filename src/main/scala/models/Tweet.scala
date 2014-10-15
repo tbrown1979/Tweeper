@@ -15,17 +15,38 @@ case class User (
   created_at: DateTime,
   followers_count: Int,
   friends_count: Int,
+  screen_name: String,
   id_str: String,
   profile_image_url: String
 )
 
 object User extends DefaultJsonProtocol {
-  implicit val UserFormat = jsonFormat12(User.apply)
+  implicit val UserFormat = jsonFormat13(User.apply)
+}
+
+case class MediaElements (
+  media_url_https: String,
+  url: String
+)
+
+object MediaElements extends DefaultJsonProtocol {
+  implicit val MediaElementsFormat = jsonFormat2(MediaElements.apply)
+}
+
+case class ExtendedEntities (
+  media: List[MediaElements]
+)
+
+object ExtendedEntities extends DefaultJsonProtocol {
+  implicit val ExtendedEntitiesFormat = jsonFormat1(ExtendedEntities.apply)
 }
 
 case class Tweet (
   retweeted: Boolean,
+  lang: String,
   id: Long,
+  extended_entities: Option[ExtendedEntities],
+  timestamp_ms: String,
   created_at: DateTime,
   favorite_count: Int,
   text: String,
@@ -36,5 +57,5 @@ case class Tweet (
 )
 
 object Tweet extends DefaultJsonProtocol {
-  implicit val TweetFormat = jsonFormat9(Tweet.apply)
+  implicit val TweetFormat = jsonFormat12(Tweet.apply)
 }
