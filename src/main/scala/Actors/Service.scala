@@ -63,12 +63,12 @@ trait ServiceRoute extends HttpService {
     } ~
     path("search") {
       post {
-        entity(as[EsSearch]) { search =>
+        entity(as[SearchQuery]) { search =>
           val size = search.size
           val from = search.from
-          val query = search.query.query_string.query
+          val searchTerms = search.searchTerms
 
-          complete(TweetPersistence.searchTweets(size, from, query))
+          complete(TweetPersistence.searchTweets(size, from, searchTerms))
         }
       }
     } ~

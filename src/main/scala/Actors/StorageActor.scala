@@ -20,7 +20,7 @@ import MediaTypes._
 
 trait TweetPersistence {
   def storeTweet(tweet: Tweet): Unit
-  def searchTweets(size: Int, from: Int, searchTerms: String): Future[List[Tweet]]
+  def searchTweets(size: Int, from: Int, searchTerms: List[String]): Future[List[Tweet]]
 }
 
 trait ElasticSearchTweetPersistence extends TweetPersistence {
@@ -32,8 +32,11 @@ trait ElasticSearchTweetPersistence extends TweetPersistence {
     Post("http://localhost:9200/tweets/tweet/", tweet)
   }
 
-  def searchTweets(size: Int, from: Int, searchTerms: String): Future[List[Tweet]] = {
-    val esQuery = s"""{"size":${size},"from":${from},"query":{"query_string":{"default_field":"text","query":"${searchTerms} AND lang:en","default_operator":"AND"}},"sort":{"id":"desc"}}"""
+  def searchTweets(size: Int, from: Int, searchTerms: List[String]): Future[List[Tweet]] = {
+    val formattedTerms = s"(${searchTerms.mkString(" ")})"
+    println(formattedTerms)
+    val esQuery = s"""{"size":${size},"from":${from},"query":{"query_string":{"default_field":"text","query":"${formattedTerms} AND lang:en","default_operator":"AND"}},"sort":{"id":"desc"}}"""
+    println(esQuery)
     val tweetListPipeline = sendReceive ~> unmarshal[EsSearchResult]
     tweetListPipeline(Post("http://localhost:9200/tweets/tweet/_search", esQuery))
       .map(res => res.hits.hits.map(_._source))
