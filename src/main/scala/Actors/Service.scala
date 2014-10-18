@@ -41,7 +41,6 @@ trait ServiceRoute extends HttpService {
       }
     }
   }
-
   val serviceRoute = {
     path("hello") {
       getFromResource("index.html")
@@ -60,6 +59,17 @@ trait ServiceRoute extends HttpService {
         val termList: List[String] =
           terms.fold(List[String]())(_.split("\\+").toList.map(t => t.toLowerCase))//use unmarshalling?
         streamRoute((peer: ActorRef) => new TweetStreamer(peer, termList, lang))
+      }
+    } ~
+    path("search") {
+      post {
+        entity(as[EsSearch]) { search =>
+          val size = search.size
+          val from = search.from
+          val query = search.query.query_string.query
+
+          complete(TweetPersistence.searchTweets(size, from, query))
+        }
       }
     } ~
     pathPrefix("top") {

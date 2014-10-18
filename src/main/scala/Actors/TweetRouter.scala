@@ -8,7 +8,7 @@ import DefaultJsonProtocol._
 
 
 class TweetRouterActor extends Actor with ActorLogging {
-  val storageActor = StreamingActorSystem.actorOf(Props[TweetPersistenceActor])
+  //val storageActor = StreamingActorSystem.actorOf(Props[TweetPersistenceActor])
   val metricActor  = StreamingActorSystem.actorOf(Props[TweetTrackerActor])
   val hashtagActor = StreamingActorSystem.actorOf(Props[HashtagActor])
   val emojiActor   = StreamingActorSystem.actorOf(Props[EmojiActor])
@@ -21,7 +21,7 @@ class TweetRouterActor extends Actor with ActorLogging {
       emojiActor ! emojis
 
     case FilterStreamTweet(t, hts, emojis) =>
-      storageActor ! t
+      TweetPersistence.storeTweet(t)
       hashtagActor ! hts
       emojiActor ! emojis
       context.system.eventStream.publish(t)

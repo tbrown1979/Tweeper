@@ -12,32 +12,32 @@ import spray.can.Http.RegisterChunkHandler
 import spray.can.server.Stats
 import spray.client.pipelining._
 import spray.http._
-import spray.util._
+import spray.httpx.SprayJsonSupport._
 import spray.json._
+import spray.util._
 import HttpMethods._
 import MediaTypes._
 
 trait TweetPersistence {
-  def storeTweet(tweet: String): Unit
+  def storeTweet(tweet: Tweet): Unit
+  def searchTweets(size: Int, from: Int, searchTerms: String): Future[List[Tweet]]
 }
 
 trait ElasticSearchTweetPersistence extends TweetPersistence {
-  this: Actor =>
+  implicit val system = StreamingActorSystem
   //pull url out to application.conf
   val pipeline = sendReceive
 
-  def storeTweet(tweet: String) = pipeline {
+  def storeTweet(tweet: Tweet) = pipeline {
     Post("http://localhost:9200/tweets/tweet/", tweet)
   }
-}
 
-class TweetPersistenceActor extends TweetStorageActor with ElasticSearchTweetPersistence
-
-trait TweetStorageActor extends Actor with ActorLogging with TweetPersistence {
-  log.debug("Starting streaming response ...")
-
-  def receive: Receive = {
-    case t: Tweet =>
-      storeTweet(t.toJson.toString)
+  def searchTweets(size: Int, from: Int, searchTerms: String): Future[List[Tweet]] = {
+    val esQuery = s"""{"size":${size},"from":${from},"query":{"query_string":{"default_field":"text","query":"${searchTerms} AND lang:en","default_operator":"AND"}},"sort":{"id":"desc"}}"""
+    val tweetListPipeline = sendReceive ~> unmarshal[EsSearchResult]
+    tweetListPipeline(Post("http://localhost:9200/tweets/tweet/_search", esQuery))
+      .map(res => res.hits.hits.map(_._source))
   }
 }
+
+object TweetPersistence extends ElasticSearchTweetPersistence

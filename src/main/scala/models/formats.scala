@@ -8,12 +8,13 @@ import spray.json.{ JsString, JsValue, RootJsonFormat, DefaultJsonProtocol }
 import DefaultJsonProtocol._
 
 object DateTimeJsonProtocol extends DefaultJsonProtocol {//specific to Twitter's datetime
+  val format = "EE MMM d HH:mm:ss Z yyyy"
+  val formatter = DateTimeFormat.forPattern(format)
   private def parseDate(date: String): DateTime = {
-    val format = "EE MMM d HH:mm:ss Z yyyy"
-    DateTime.parse(date, DateTimeFormat.forPattern(format))
+    DateTime.parse(date, formatter)
   }
   implicit object DateTimeJsonFormat extends RootJsonFormat[DateTime] {
-    def write(c: DateTime) = JsString(c.toString)
+    def write(c: DateTime) = JsString(formatter.print(c))
 
     def read(json: JsValue) = json match {
       case JsString(s) => parseDate(s)
