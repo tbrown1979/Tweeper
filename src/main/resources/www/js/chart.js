@@ -17,17 +17,17 @@ var chartRT = function () {
   _self.Ticks = 20;
   _self.TickDuration = 1000; //1 Sec
   _self.MaxValue = 100;
-  _self.w = 800;
+  _self.w = 600;
   _self.h = 400;
-  _self.margin = { top: 50, right: 120, bottom: 60, left: 30 };
+  _self.margin = { top: 20, right: 15, bottom: 40, left: 40 };
   _self.width = _self.w - _self.margin.left - _self.margin.right;
   _self.height = _self.h - _self.margin.top - _self.margin.bottom;
   _self.xText = '';
   _self.yText = '';
   _self.titleText = '';
   _self.chartSeries = {};
-  _self.backFillValue = 47;
-  _self.extent = [47,47];
+  _self.backFillValue = 0;
+  _self.extent = [0,0];
 
   _self.Init = function () {
     d3.select('#chart-' + _self.guid).remove();
@@ -35,12 +35,30 @@ var chartRT = function () {
     //
     //  SVG Canvas
     //
-    _self.svg = d3.select("body").append("svg")
+    _self.svg = d3.select("body")
+      .select(".content").select(".stats").select(".stream-graph")
+      .append("svg")
+      .attr("viewBox", "0 0 600 400")
+      .attr("preserveAspectRatio", "xMinYMin meet")
       .attr("id", 'chart-' + _self.guid)
-      .attr("width", _self.w)
-      .attr("height", _self.h)
       .append("g")
+
+      .attr("width", "100%")//_self.w)
+      .attr("height", _self.h)
       .attr("transform", "translate(" + _self.margin.left + "," + _self.margin.top + ")");
+
+    // console.log(_self.svg.parent());
+    // d3.select(window).on('resize', _self.resize);
+
+    // _self.resize = function() {
+    //   // update width
+    //   width = parseInt(d3.select('.stream-graph').style('width'), 10);
+    //   console.log("WIDTH: " + width);
+    //   width = width - margin.left - margin.right;
+    //   _self.svg.attr("width", width);
+    // }
+
+
     //
     //  Use Clipping to hide chart mechanics
     //
@@ -99,7 +117,7 @@ var chartRT = function () {
       .call(_self.xAxis)
       .append("text")
       .attr("id", "xName-" + _self.guid)
-      .attr("x", _self.width / 2)
+      .attr("x",_self.width / 2)
       .attr("dy", "3em")
       .style("text-anchor", "middle")
       .text(_self.xText);
@@ -165,27 +183,27 @@ var chartRT = function () {
     //
     //  Legend
     //
-    _self.Legend = _self.svg.selectAll(".Legend")
-      .data(_self.DataSeries)
-      .enter().append("g")
-      .attr("class", "Legend");
+    // _self.Legend = _self.svg.selectAll(".Legend")
+    //   .data(_self.DataSeries)
+    //   .enter().append("g")
+    //   .attr("class", "Legend");
 
-    _self.Legend.append("circle")
-      .attr("r", 4)
-      .style("fill", function (d) { return _self.color(d.Name); })
-      .style("fill-opacity", .5)
-      .style("stroke", function (d) { return _self.color(d.Name); })
-      .attr("transform", function (d, i) { return "translate(" + (_self.width + 6) + "," + (10 + (i * 20)) + ")"; });
+    // _self.Legend.append("circle")
+    //   .attr("r", 4)
+    //   .style("fill", function (d) { return _self.color(d.Name); })
+    //   .style("fill-opacity", .5)
+    //   .style("stroke", function (d) { return _self.color(d.Name); })
+    //   .attr("transform", function (d, i) { return "translate(" + (_self.width + 6) + "," + (10 + (i * 20)) + ")"; });
 
-    _self.Legend.append("text")
-      .text(function (d) { return d.Name; })
-      .attr("dx", "0.5em")
-      .attr("dy", "0.25em")
-      .style("text-anchor", "start")
-      .attr("transform", function (d, i) { return "translate(" + (_self.width + 6) + "," + (10 + (i * 20)) + ")"; });
+    // _self.Legend.append("text")
+    //   .text(function (d) { return d.Name; })
+    //   .attr("dx", "0.5em")
+    //   .attr("dy", "0.25em")
+    //   .style("text-anchor", "start")
+    //   .attr("transform", function (d, i) { return "translate(" + (_self.width + 6) + "," + (10 + (i * 20)) + ")"; });
 
     _self.tick = function (id) {
-      console.log("ticking");
+      //console.log("ticking");
       _self.thisTick = new Date();
       var elapsed = parseInt(_self.thisTick - _self.lastTick);
       var elapsedTotal = parseInt(_self.lastTick - _self.firstTick);
@@ -199,7 +217,6 @@ var chartRT = function () {
       _self.lastTick = _self.thisTick;
 
 
-
       //Add new values
       for (i in _self.DataSeries) {
         _self.DataSeries[i].Data.push({ Value: _self.chartSeries[_self.DataSeries[i].Name] });
@@ -211,13 +228,14 @@ var chartRT = function () {
       var scaleArea = false;
       var newExtent = d3.extent(_self.DataSeries[0].Data, function(d) { return d.Value; });
       function extentChanged(newExtent, old) {
-        return newExtent[0] < _self.extent[0] || newExtent[1] > _self.extent[1]
+        return newExtent[0] !== _self.extent[0] || newExtent[1] !== _self.extent[1]
       }
       //if changed, set the new extent, and set true to change the area scale size
       if (extentChanged(newExtent, _self.extent)) {
         _self.extent = d3.extent(_self.DataSeries[0].Data, function(d) { return d.Value; });
         var scaleArea = true;
       }
+
       //change domain to match max/min values in data
       _self.yscale.domain(_self.extent);
 
@@ -269,6 +287,7 @@ var chartRT = function () {
     _self.DataSeries.push({ Name: SeriesName, Data: [{ Value: _self.backFillValue}] });
     _self.Init();
   }
+
 }
 //
 //
@@ -277,19 +296,21 @@ var chartRT = function () {
 //
 //
 //
+function launchChart() {
+  var chart = new chartRT();
+  chart.xText = "Seconds Ago";
+  chart.yText = "";
+  chart.titleText = "Tweets Per Second";
+  chart.Ticks = 10;
+  chart.TickDuration = 5000;
+  chart.MaxValue = 60;
 
-var chart = new chartRT();
-chart.xText = "Seconds";
-chart.yText = "Value";
-chart.titleText = "Tweets Per Second";
-chart.Ticks = 20;
-chart.TickDuration = 5000;
-chart.MaxValue = 60;
-
-var series = "tweets";
-chart.addSeries(series);
-var source = new EventSource("http://localhost:8081/stats");
-source.onmessage = function(event) {
-  var json = JSON.parse(event.data);
-  chart.chartSeries[series] = json.avg;
-};
+  var series = "tweets";
+  chart.addSeries(series);
+  var source = new EventSource(config.hostName + "/stats");
+  source.onmessage = function(event) {
+    var json = JSON.parse(event.data);
+    chart.chartSeries[series] = json.avg;
+  };
+}
+launchChart();

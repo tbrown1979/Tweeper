@@ -42,9 +42,6 @@ trait ServiceRoute extends HttpService {
     }
   }
   val serviceRoute = {
-    path("hello") {
-      getFromResource("index.html")
-    } ~
     path("ping") {
       complete("PONG!")
     } ~
@@ -52,23 +49,25 @@ trait ServiceRoute extends HttpService {
       streamRoute((peer: ActorRef) => new GenericStreamer[StreamStats](peer))
     } ~
     pathPrefix("stream" / "filter") {
-      pathEnd {
-        streamRoute((peer: ActorRef) => new TweetStreamer(peer))
-      } ~
       parameters('lang.?, 'terms.?) { (lang, terms) =>
         val termList: List[String] =
           terms.fold(List[String]())(_.split("\\+").toList.map(t => t.toLowerCase))//use unmarshalling?
         streamRoute((peer: ActorRef) => new TweetStreamer(peer, termList, lang))
+      } ~
+      pathEnd {
+        streamRoute((peer: ActorRef) => new TweetStreamer(peer))
       }
     } ~
     path("search") {
-      post {
-        entity(as[SearchQuery]) { search =>
-          val size = search.size
-          val from = search.from
-          val searchTerms = search.searchTerms
+      respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
+        post {
+          entity(as[SearchQuery]) { search =>
+            val size = search.size
+            val from = search.from
+            val searchTerms = search.searchTerms
 
-          complete(TweetPersistence.searchTweets(size, from, searchTerms))
+            complete(TweetPersistence.searchTweets(size, from, searchTerms))
+          }
         }
       }
     } ~
@@ -89,13 +88,11 @@ trait ServiceRoute extends HttpService {
 
 trait FrontendContentRoute extends HttpService {
   val contentRoute = {
-    path("index") { getFromResource("index.html") } ~
-    pathPrefix("config.js") { get { getFromResource("config.js") } } ~
-    pathPrefix("vendor") { get { getFromResourceDirectory("vendor") } } ~
-    pathPrefix("css") { get { getFromResourceDirectory("css") } } ~
-    pathPrefix("app") { get { getFromResourceDirectory("app") } } ~
-    pathPrefix("img") { get { getFromResourceDirectory("img") } } ~
-    pathPrefix("js") { get { getFromResourceDirectory("js") } } ~
-    pathPrefix("font") { get { getFromResourceDirectory("font") } }
+    path("") {
+      getFromResource("www/index.html")
+    } ~
+    pathPrefix("www") { get { getFromResourceDirectory("www") } }
+    //pathPrefix("stylesheets") { get { getFromResourceDirectory("stylesheets") } } ~
+    //pathPrefix("material") { get {getFromResourceDirectory("material") } }
   }
 }

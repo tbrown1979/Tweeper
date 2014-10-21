@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html ng-app="twitterStreamingApp">
+
+<head>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/www/material/css/ripples.min.css" rel="stylesheet">
+    <link href="/www/material/css/material-wfont.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/www/stylesheets/style.css">
+</head>
+
+<body ng-controller="TweetController">
+  <div class="navbar navbar-default">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-warning-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <span class="navbar-brand">Tweeper</span>
+      </div>
+      <div class="navbar-collapse collapse navbar-warning-collapse">
+        <ul class="nav navbar-nav">
+          <li class="active"><a ng-click="resetStream()">Reset Stream</a></li>
+        </ul>
+        <form class="navbar-form navbar-left" ng-submit="userSearch()">
+          <input type="text" class="form-control col-lg-8" ng-model="search" placeholder="Enter a search term">
+        </form>
+        <ul class="nav navbar-nav navbar-right">
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="container container-fluid content">
+    <div class="row">
+      <div class="tweetsContainer col-lg-5 col-md-5 col-sm-12">
+        <pagination
+           class="pagination-sm"
+           max-size="maxSize"
+           total-items="tweets.length"
+           items-per-page="itemsPerPage"
+           ng-model="currentPage"
+           ng-change="pageChanged()">
+        </pagination>
+        <div class="tweetList">
+          <div class="tweet" ng-repeat="tweet in filteredTweets">
+            <span>
+              <a href="http://www.twitter.com/{{ tweet.user.screen_name }}" target="_blank">
+                <img class="thumbnail" ng-src="{{ tweet.user.profile_image_url }}" />
+              </a>
+            </span>
+
+            <a tooltip-placement="bottom" tooltip="click to visit Twitter profile"
+               href="http://www.twitter.com/{{ tweet.user.screen_name }}" target="_blank">
+              <span class="username" ng-bind="tweet.user.name"></span>
+            </a>
+            <span class="username_screen">@{{tweet.user.screen_name}}</span>
+            <div class="pull-right timeInterval">{{tweet.created_at | fromNow}}</div>
+            <div class="tweettext">
+              <div ng-bind-html="tweet.text | linkifyTweet"></div>
+              <div class="pull-left timeInterval">{{tweet.user.followers_count | numberFormat}} followers</div>
+              <div ng-show="tweet.retweeted_status.retweet_count" class="pull-right timeInterval">
+                {{tweet.retweeted_status.retweet_count | numberFormat}} retweets</div>
+              <div ng-show="tweet.retweet_count" class="pull-right timeInterval">
+                {{tweet.retweet_count | numberFormat}} retweets</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-7 col-md-7 col-sm-12 stats">
+        <div class="word-cloud svg-container"></div>
+        <div class="stream-graph"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+  <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+  <script src="/www/material/js/ripples.min.js"></script>
+  <script src="/www/material/js/material.min.js"></script>
+
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="/www/js/libs/d3.layout.cloud.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.12/angular.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.11.0/ui-bootstrap-tpls.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.3/moment.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/angular-moment/0.8.2/angular-moment.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"></script>
+  <script src="/www/js/config.js"></script>
+  <script src="/www/js/app.js"></script>
+  <script src="/www/js/filters.js"></script>
+  <script src="/www/js/services/wordcount.js"></script>
+  <script src="/www/js/wordCloud.js"></script>
+  <script src="/www/js/controllers/TweetsController.js"></script>
+  <script src="/www/js/chart.js"></script>
+</body>
+
+</html>

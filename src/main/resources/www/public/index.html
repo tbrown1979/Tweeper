@@ -20,10 +20,6 @@
         <span class="navbar-brand">Tweeper</span>
       </div>
       <div class="navbar-collapse collapse navbar-warning-collapse">
-        <ul class="nav navbar-nav">
-          <li class="active"><a href="javascript:void(0)">Active</a></li>
-          <li><a href="javascript:void(0)">Link</a></li>
-        </ul>
         <div class="navbar-left">
           <form class="navbar-form" ng-submit="searchQuery()">
             <input type="text" class="form-control col-lg-8" ng-model="search" placeholder="Enter a search term">
@@ -31,62 +27,53 @@
 
         </div>
         <ul class="nav navbar-nav navbar-right">
-          <li><a href="javascript:void(0)">Link</a></li>
         </ul>
       </div>
     </div>
   </div>
 
-  <div class="container content">
-    <div class="tweetsContainer col-lg-5 col-md-5 col-sm-12">
-      <pagination
-         class="pagination-sm"
-         max-size="maxSize"
-         total-items="tweets.length"
-         items-per-page="itemsPerPage"
-         ng-model="currentPage"
-         ng-change="pageChanged()">
-      </pagination>
-      <div class="tweetList">
-        <div class="tweet" ng-repeat="tweet in filteredTweets">
-          <span>
-            <a href="http://www.twitter.com/{{ tweet.user.screen_name }}" target="_blank">
-              <img class="thumbnail" ng-src="{{ tweet.user.profile_image_url }}" />
-            </a>
-          </span>
+  <div class="container container-fluid content">
+    <div class="row">
+      <div class="tweetsContainer col-lg-5 col-md-5 col-sm-12">
+        <pagination
+           class="pagination-sm"
+           max-size="maxSize"
+           total-items="tweets.length"
+           items-per-page="itemsPerPage"
+           ng-model="currentPage"
+           ng-change="pageChanged()">
+        </pagination>
+        <div class="tweetList">
+          <div class="tweet" ng-repeat="tweet in filteredTweets">
+            <span>
+              <a href="http://www.twitter.com/{{ tweet.user.screen_name }}" target="_blank">
+                <img class="thumbnail" ng-src="{{ tweet.user.profile_image_url }}" />
+              </a>
+            </span>
 
-          <a tooltip-placement="bottom" tooltip="click to visit Twitter profile"
-             href="http://www.twitter.com/{{ tweet.user.screen_name }}" target="_blank">
-            <span class="username" ng-bind="tweet.user.name"></span>
-          </a>
-          <span class="username_screen">{{tweet.user.screen_name}}</span>
-          <div class="pull-right timeInterval">{{tweet.created_at | fromNow}}</div>
-          <div class="tweettext">
-            <div>{{tweet.text}}</div>
-            <div class="pull-left timeInterval">{{tweet.user.followers_count | numberFormat}} followers</div>
-            <div ng-show="tweet.retweeted_status.retweet_count" class="pull-right timeInterval">
-              {{tweet.retweeted_status.retweet_count | numberFormat}} retweets</div>
-            <div ng-show="tweet.retweet_count" class="pull-right timeInterval">
-              {{tweet.retweet_count | numberFormat}} retweets</div>
+            <a tooltip-placement="bottom" tooltip="click to visit Twitter profile"
+               href="http://www.twitter.com/{{ tweet.user.screen_name }}" target="_blank">
+              <span class="username" ng-bind="tweet.user.name"></span>
+            </a>
+            <span class="username_screen">@{{tweet.user.screen_name}}</span>
+            <div class="pull-right timeInterval">{{tweet.created_at | fromNow}}</div>
+            <div class="tweettext">
+              <div ng-bind-html="tweet.text | linkifyTweet"></div>
+              <div class="pull-left timeInterval">{{tweet.user.followers_count | numberFormat}} followers</div>
+              <div ng-show="tweet.retweeted_status.retweet_count" class="pull-right timeInterval">
+                {{tweet.retweeted_status.retweet_count | numberFormat}} retweets</div>
+              <div ng-show="tweet.retweet_count" class="pull-right timeInterval">
+                {{tweet.retweet_count | numberFormat}} retweets</div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="col-lg-7 col-md-7 col-sm-12 stats">
-      <p class="well">
-        Top Emojis:
-        <span ng-repeat="emoji in emojis">
-          {{emoji.emoji}}
-        </span>
-        <br>
-        Top Hashtags:
-        <span ng-repeat="hashtag in hashtags">
-          {{hashtag.hashtag}}
-        </span>
-      </p>
-      <div class="word-cloud"></div>
-    </div>
+      <div class="col-lg-7 col-md-7 col-sm-12 stats">
+        <div class="word-cloud svg-container"></div>
+        <div class="stream-graph"></div>
+      </div>
 
+    </div>
   </div>
 
   <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
@@ -102,9 +89,11 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.11.0/ui-bootstrap-tpls.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.3/moment.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/angular-moment/0.8.2/angular-moment.js"></script>
+  <script src="/js/config.js"></script>
   <script src="/js/app.js"></script>
   <script src="/js/filters.js"></script>
-  <script src="/js/dontuse.js"></script>
+  <script src="/js/services/wordcount.js"></script>
+  <script src="/js/wordCloud.js"></script>
   <script src="/js/controllers/TweetsController.js"></script>
   <script src="/js/test.js"></script>
 </body>
