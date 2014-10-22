@@ -87,6 +87,10 @@ a {
     float: left;
 }
 
+.pagination {
+    margin: 20px;
+}
+
 .pagination-mini {
     display: inline-block;
     padding-left: 0;

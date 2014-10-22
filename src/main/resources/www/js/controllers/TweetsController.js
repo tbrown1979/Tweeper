@@ -22,14 +22,14 @@ angular.module('TweetCtrl', [])
       $scope.source.termList = termList;
       $scope.source.onmessage = function(event) {
         var tweet = JSON.parse(event.data);
-        addTweet(tweet);
+        $scope.addTweet(tweet);
         $scope.wordCount.insert([tweet]);
-        updatePagination();
+        $scope.pageChanged();
         $scope.$apply();
         if (tweet.extended_entities) {
           console.log(tweet.extended_entities.media[0].media_url_https);
         }
-      };
+      }
     }
 
     $scope.searchQuery = function(from, size, termList, url, cb) {
@@ -56,19 +56,21 @@ angular.module('TweetCtrl', [])
         size: size,
         from: from,
         searchTerms: termList
-      }).success(function(data) {
-        $scope.tweets = data;
-        //$scope.$apply();
-        $scope.wordCount.reset();
-        $scope.wordCount.insert(data);
-        cb();
-        createSource(config.hostName + url, termList);
-      });
+      }).success(
+        function(data) {
+          $scope.tweets = data;
+          $scope.pageChanged();
+          $scope.wordCount.reset();
+          $scope.wordCount.insert(data);
+          cb();
+          createSource(config.hostName + url, termList);
+        });
+
     }
 
     $scope.searchQuery(0, 500, [], "/stream/filter/?lang=en", function() {
       updateWordCloud();
-      setTimeout(updateWordCloud(), 10000);
+      setTimeout(updateWordCloud, 10000);
     })
 
     $scope.resetStream = function() {
@@ -119,15 +121,9 @@ angular.module('TweetCtrl', [])
       $scope.wordCloud.update(cloudContent);
     }
 
-    function addTweet(json) {
+    $scope.addTweet = function addTweet(json) {
       $scope.tweets.unshift(json);
       if ($scope.tweets.length < 500) return;
       var popped = $scope.tweets.pop();
-    }
-
-    function updatePagination() {
-      var begin = (($scope.currentPage - 1) * $scope.itemsPerPage);
-      var end = begin + $scope.itemsPerPage;
-      $scope.filteredTweets = $scope.tweets.slice(begin, end);
     }
   }]);
