@@ -7,5 +7,4 @@ test-output/
 *.iml
 data/
 twitter.conf
-emoji_pretty.json
 kibana-3.1.0
