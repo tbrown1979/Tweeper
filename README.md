@@ -2,7 +2,7 @@ Tweeper
 =======
 This is a project I created to display tweets consumed from the [Twitter Streaming API](https://dev.twitter.com/streaming/overview)
 
-## Overview:
+## Overview
 This project uses [Spray](https://spray.io) as a backend. 
 
 Both the sample and filter Twitter streams are consumed. 
