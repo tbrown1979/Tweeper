@@ -70,7 +70,7 @@ angular.module('TweetCtrl', [])
 
     $scope.searchQuery(0, 500, [], "/stream/filter/?lang=en", function() {
       updateWordCloud();
-      setTimeout(updateWordCloud, 10000);
+      setInterval(updateWordCloud, 10000);
     })
 
     $scope.resetStream = function() {
