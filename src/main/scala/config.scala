@@ -14,3 +14,10 @@ trait ElasticSearchConfig extends Config {
 trait TopicsConfig extends Config {
   val topics: List[String] = getString("topics").split(",").toList
 }
+
+trait ApiKeysConfig extends Config {
+  val consumerKey = getString("twitter.consumer.key")
+  val consumerSecret = getString("twitter.consumer.secret")
+  val accessTokenKey = getString("twitter.accessToken.key")
+  val accessTokenSecret = getString("twitter.accessToken.secret")
+}

@@ -5,12 +5,12 @@ import twitter4j._
 import DefaultJsonProtocol._
 
 
-object Util {
-  val config = new twitter4j.conf.ConfigurationBuilder()
-    .setOAuthConsumerKey("F0qSJRDC0wXhQ6FXeU3pZ5xJm")
-    .setOAuthConsumerSecret("lx7zmWpOQ6aCc7k4P05IeDrjBmQSXhpApvbKogLr7voMHXkYNz")
-    .setOAuthAccessToken("16603768-mYPj5hsiTAd2NJNAKOUrlb2eiA5w9povP0wqCzJS7")
-    .setOAuthAccessTokenSecret("mVgKca5yTMALMYDbzxPsXSpM495f55ZW5WcSjTcv7SeZw")
+object Util extends ApiKeysConfig {
+  val apiConfigBuilder = new twitter4j.conf.ConfigurationBuilder()
+    .setOAuthConsumerKey(consumerKey)
+    .setOAuthConsumerSecret(consumerSecret)
+    .setOAuthAccessToken(accessTokenKey)
+    .setOAuthAccessTokenSecret(accessTokenSecret)
     .setJSONStoreEnabled(true)
     .build
 

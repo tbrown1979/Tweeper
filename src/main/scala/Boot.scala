@@ -9,8 +9,8 @@ import twitter4j._
 object Boot extends App with TopicsConfig{
   implicit val system = StreamingActorSystem
 
-  val twitterStreamSample = new TwitterStreamFactory(Util.config).getInstance
-  val twitterStreamFilter = new TwitterStreamFactory(Util.config).getInstance
+  val twitterStreamSample = new TwitterStreamFactory(Util.apiConfigBuilder).getInstance
+  val twitterStreamFilter = new TwitterStreamFactory(Util.apiConfigBuilder).getInstance
   val tweetRouter = system.actorOf(Props[TweetRouterActor])
 
   twitterStreamSample.addListener(Util.sampleStatusListener(tweetRouter))
