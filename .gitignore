@@ -1,7 +1,5 @@
 /.idea/
-/project
 /project/boot/
-/project/plugins/project
 target/
 lib_managed/
 src_managed/
