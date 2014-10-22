@@ -92,7 +92,5 @@ trait FrontendContentRoute extends HttpService {
       getFromResource("www/index.html")
     } ~
     pathPrefix("www") { get { getFromResourceDirectory("www") } }
-    //pathPrefix("stylesheets") { get { getFromResourceDirectory("stylesheets") } } ~
-    //pathPrefix("material") { get {getFromResourceDirectory("material") } }
   }
 }

@@ -8,7 +8,6 @@ import DefaultJsonProtocol._
 
 
 class TweetRouterActor extends Actor with ActorLogging {
-  //val storageActor = StreamingActorSystem.actorOf(Props[TweetPersistenceActor])
   val metricActor  = StreamingActorSystem.actorOf(Props[TweetTrackerActor])
   val hashtagActor = StreamingActorSystem.actorOf(Props[HashtagActor])
   val emojiActor   = StreamingActorSystem.actorOf(Props[EmojiActor])
