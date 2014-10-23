@@ -24,3 +24,4 @@ This project has reached a point that I am happy with. There are some unused fea
 *   Fill Graph with past data, instead of initializing to 0. (This shouldn't be too difficult since this information is already stored in elasticsearch.)
 *   Make a cleaner UI. I'm new to frontend development.
 *   Clean up javascript. (It's pretty poor)
+*   Use ES percolation queries to filter tweets sent to client
