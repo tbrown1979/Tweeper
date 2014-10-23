@@ -1,3 +1,5 @@
+import com.typesafe.sbt.SbtStartScript
+
 scalaVersion := "2.10.2"
 
 libraryDependencies ++= {
@@ -23,3 +25,5 @@ libraryDependencies ++= {
 Revolver.settings
 
 scalacOptions += "-deprecation"
+
+seq(SbtStartScript.startScriptForClassesSettings: _*)
