@@ -14,7 +14,7 @@ The tweets received from the sample stream are not stored (for various reasons),
 The clientside aspect to this displays a continuously updating list of up to 500 tweets. A wordcount is kept of every tweet that is received and is displayed using a word cloud([D3-cloud](https://github.com/jasondavies/d3-cloud)).
 Metrics received are displayed using a very simple [D3.js](https://d3js.org/) graph.
 
-This is a very basic readme. Here is a [demo](https://tweeper.tbrown.im)
+This is a very basic readme. Here is a [demo](http://tweeper.tbrown.im)
 
 ##To do
 This project has reached a point that I am happy with. There are some unused features of the backend API that I want to utilize on the clientside at some point, so this is a list of unfinished features I'd like to add.
