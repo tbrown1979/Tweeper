@@ -1,6 +1,15 @@
 /.idea/
 /project/boot/
-target/
+target/resolution-cache
+target/streams
+target/specs2-reports
+target/test-reports
+target/scala-2.10/classes
+target/scala-2.10/test-classes
+.DS_Store
+project/project
+project/target
+target/.history
 lib_managed/
 src_managed/
 test-output/
