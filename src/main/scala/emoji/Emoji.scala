@@ -22,9 +22,11 @@ object Emoji extends DefaultJsonProtocol {
   }
 
   private def getEmojis: List[Emoji] = {
-    val source = scala.io.Source.fromFile("src/main/scala/emoji/emoji_pretty.json")
-    val file = source.getLines mkString "\n"
-    source.close()
+    //val source = scala.io.Source.fromFile("src/main/resources/emoji_pretty.json")
+    val source = getClass.getResourceAsStream("/emoji_pretty.json")
+    //val file = source.getLines mkString "\n"
+    val file = scala.io.Source.fromInputStream(source).getLines mkString "\n"
+    //source.close()
     val emojiJson = JsonParser(file)
     emojiJson.convertTo[List[Emoji]]
   }

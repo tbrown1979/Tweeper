@@ -19,7 +19,7 @@ object Boot extends App with TopicsConfig{
   twitterStreamFilter.filter(new FilterQuery().track(topics.toArray))
   twitterStreamSample.sample
 
-  val port = Properties.envOrElse("PORT", "8081").toInt
+  val port = Properties.envOrElse("PORT", "8080").toInt
 
   val service = StreamingActorSystem.actorOf(Props[ServiceActor], "demo-service")
 

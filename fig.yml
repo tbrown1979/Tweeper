@@ -1,0 +1,13 @@
+web:
+  build: .
+  # entrypoint: /opt/app/target/universal/stage/bin/straw-poll-app
+  # command: "-Dconfig.file=/etc/opt/app/docker.conf"
+  #command: ls app
+  command: java -jar /opt/app/server.jar
+  #command: /opt/app/target/universal/stage/bin/straw-poll-app
+  links:
+    - elasticsearch
+  ports:
+    - "8080:8080"
+elasticsearch:
+  image: elasticsearch

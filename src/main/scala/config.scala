@@ -8,7 +8,9 @@ trait Config {
 }
 
 trait ElasticSearchConfig extends Config {
-  //nothing here yet
+  lazy val host = getString("elasticsearch.host")
+  lazy val port = getString("elasticsearch.port")
+  lazy val url = s"$host:$port"
 }
 
 trait TopicsConfig extends Config {

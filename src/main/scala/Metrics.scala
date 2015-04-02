@@ -5,10 +5,10 @@ import org.elasticsearch.metrics.ElasticsearchReporter
 import scala.concurrent.duration.TimeUnit
 import spray.json._
 
-object TweetMetrics {
+object TweetMetrics extends ElasticSearchTweetPersistence {
   val metrics = new MetricRegistry
   val reporter = ElasticsearchReporter.forRegistry(metrics)
-    .hosts("localhost:9200")
+    .hosts("http://" + url)
     .build();
   reporter.start(5, TimeUnit.SECONDS);
 
