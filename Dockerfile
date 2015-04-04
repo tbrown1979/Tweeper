@@ -1,4 +1,4 @@
-FROM java:8
+FROM williamyeh/scala
 
 MAINTAINER Taylor Brown
 
@@ -6,13 +6,17 @@ WORKDIR /
 
 # USER root
 
-#ADD . /opt/app
+ADD . /opt/app
 
-ADD /target/scala-2.10/tweeper-assembly-0.1-SNAPSHOT.jar /opt/app/server.jar
+#ADD /target/scala-2.10/tweeper-assembly-0.1-SNAPSHOT.jar /opt/app/server.jar
 
 WORKDIR /opt/app
 
 #ENTRYPOINT /opt/app/target/universal/stage/bin/straw-poll-app
+
+# RUN rm -rf /opt/app/target /opt/app/project/project /opt/app/project/target 
+
+RUN sbt assembly
 
 EXPOSE 8080
 
