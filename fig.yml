@@ -1,10 +1,6 @@
 web:
   build: .
-  # entrypoint: /opt/app/target/universal/stage/bin/straw-poll-app
-  # command: "-Dconfig.file=/etc/opt/app/docker.conf"
-  #command: ls app
-  command: java -jar /opt/app/target/scala-2.10/app-assembly-0.1-SNAPSHOT.jar
-  #command: /opt/app/target/universal/stage/bin/straw-poll-app
+  command: java -jar /opt/app/app.jar
   links:
     - elasticsearch
   ports:
