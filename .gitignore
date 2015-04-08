@@ -9,6 +9,7 @@ target/scala-2.10/test-classes
 .DS_Store
 project/project
 project/target
+/target
 target/.history
 lib_managed/
 src_managed/
