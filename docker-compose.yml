@@ -1,4 +1,10 @@
-web:
+nginx:
+  build: lb/
+  links:
+    - website:website
+  ports:
+    - "80:80"
+website:
   build: .
   command: java -jar /opt/app/app.jar
   links:
