@@ -1,10 +1,14 @@
 package com.tbrown.twitterStream
 
+object EmojiTracker extends ManagedMemoryCounter[Emoji]
+object HashtagTracker extends ManagedMemoryCounter[String]
 
-object EmojiTracker extends ElementCounterThatManagesMemory[Emoji]
-object HashtagTracker extends ElementCounterThatManagesMemory[String]
+trait Counter[A] {
+  def topElements(n: Int = 3): Future[List[A]]
+  def incr(elem: A): Unit
+}
 
-trait ElementCounter[A] {
+trait MemoryCounter[A] extends Counter[A] {
   protected var map = collection.mutable.Map[A, Int]()
 
   def topElements(n: Int = 3): Future[List[A]] =
@@ -22,10 +26,10 @@ trait ElementCounter[A] {
       topElementList
     }
 
-  def incrElementCount(elem: A) = map.update(elem, map.getOrElse(elem, 0) + 1)
+  def incr(elem: A) = map.update(elem, map.getOrElse(elem, 0) + 1)
 }
 
-trait ElementCounterThatManagesMemory[A] extends ElementCounter[A] {
+trait ManagedMemoryCounter[A] extends MemoryCounter[A] {
   private val arbitraryDeletionMinimum = 5
   private var lastClear = currentTime
   private def currentTime = (System.currentTimeMillis / 1000.0)
@@ -37,8 +41,8 @@ trait ElementCounterThatManagesMemory[A] extends ElementCounter[A] {
       lastClear = currentTime
     }
 
-  override def incrElementCount(elem: A): Unit = {
-    super.incrElementCount(elem)
+  override def incr(elem: A): Unit = {
+    super.incr(elem)
     clearOldData
   }
 }
