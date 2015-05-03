@@ -3,12 +3,12 @@ package com.tbrown.twitterStream
 object EmojiTracker extends ManagedMemoryCounter[Emoji]
 object HashtagTracker extends ManagedMemoryCounter[String]
 
-trait Counter[A] {
+trait ElemCounter[A] {
   def topElements(n: Int = 3): Future[List[A]]
   def incr(elem: A): Unit
 }
 
-trait MemoryCounter[A] extends Counter[A] {
+trait MemoryCounter[A] extends ElemCounter[A] {
   protected var map = collection.mutable.Map[A, Int]()
 
   def topElements(n: Int = 3): Future[List[A]] =

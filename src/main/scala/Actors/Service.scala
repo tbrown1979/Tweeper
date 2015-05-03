@@ -70,19 +70,20 @@ trait ServiceRoute extends HttpService {
           }
         }
       }
-    } ~
-    pathPrefix("top") {
-      path("emojis") {
-        respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
-        complete(EmojiTracker.topElements(3))
-        }
-      } ~
-      path("hashtags") {
-        respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
-        complete(HashtagTracker.topElements(3).map(hts => hts.map(Hashtag(_))))
-        }
-      }
     }
+    //  ~
+    // pathPrefix("top") {
+    //   path("emojis") {
+    //     respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
+    //     complete(EmojiTracker.topElements(3))
+    //     }
+    //   } ~
+    //   path("hashtags") {
+    //     respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
+    //     complete(HashtagTracker.topElements(3).map(hts => hts.map(Hashtag(_))))
+    //     }
+    //   }
+    // }
   }
 }
 

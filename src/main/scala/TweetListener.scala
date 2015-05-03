@@ -28,9 +28,9 @@ object Util extends ApiKeysConfig {
       (status: Status) => {
         val json = TwitterObjectFactory.getRawJSON(status)
         val tweet = JsonParser(json).convertTo[Tweet]
-        val hashtags = Hashtags(status.getHashtagEntities.toList.map(_.getText))
-        val emojis = Emoji.findEmojis(status.getText)
-        router ! FilterStreamTweet(tweet, hashtags, emojis)
+        //val hashtags = Hashtags(status.getHashtagEntities.toList.map(_.getText))
+        //val emojis = Emoji.findEmojis(status.getText)
+        router ! FilterStreamTweet(tweet)
       }
     )
 
@@ -39,9 +39,9 @@ object Util extends ApiKeysConfig {
       (status: Status) => {
         val json = TwitterObjectFactory.getRawJSON(status)
         val tweet = JsonParser(json).convertTo[Tweet]
-        val hashtags = Hashtags(status.getHashtagEntities.toList.map(_.getText))
-        val emojis = Emoji.findEmojis(status.getText)
-        router ! SampleStreamTweet(tweet, hashtags, emojis)
+        //val hashtags = Hashtags(status.getHashtagEntities.toList.map(_.getText))
+        //val emojis = Emoji.findEmojis(status.getText)
+        router ! SampleStreamTweet(tweet)
       }
     )
 }
