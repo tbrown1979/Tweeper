@@ -1,5 +1,5 @@
 nginx:
-  build: lb/
+  build: nginx/
   links:
     - website:website
   ports:

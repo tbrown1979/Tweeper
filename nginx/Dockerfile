@@ -29,6 +29,7 @@ EXPOSE 443
 
 RUN rm -f /etc/nginx/sites-enabled/default
 
+ADD www/ /var/www
 ADD myapp.conf /etc/nginx/sites-enabled/myapp.conf
 ADD nginx.conf /etc/nginx/nginx.conf
 

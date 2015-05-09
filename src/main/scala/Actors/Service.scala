@@ -18,11 +18,11 @@ import HttpMethods._
 import MediaTypes._
 import MediaTypes._
 
-class ServiceActor extends Actor with ActorLogging with ServiceRoute with FrontendContentRoute {
+class ServiceActor extends Actor with ActorLogging with ServiceRoute {// with FrontendContentRoute {
   def actorRefFactory = context
 
   val route =
-    contentRoute ~
+    //contentRoute ~
     serviceRoute
 
   def receive = runRoute(route)

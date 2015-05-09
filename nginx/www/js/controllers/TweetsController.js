@@ -86,12 +86,12 @@ angular.module('TweetCtrl', [])
         0, 500, terms, "/stream/filter/?lang=en&terms=", function() {})
     }
 
-    $http.get(config.hostName + "/top/emojis").success(
-      function(data) {
-        console.log("DATA: " + JSON.stringify(data));
-        $scope.emojis = data
-      }
-    )
+    // $http.get(config.hostName + "/top/emojis").success(
+    //   function(data) {
+    //     //console.log("DATA: " + JSON.stringify(data));
+    //     $scope.emojis = data
+    //   }
+    // )
 
     $http.get(config.hostName + "/top/hashtags").success(
       function(data) {
