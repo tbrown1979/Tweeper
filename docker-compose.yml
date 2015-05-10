@@ -6,7 +6,7 @@ nginx:
     - "80:80"
 website:
   build: .
-  command: java -jar /opt/app/app.jar
+  command: java -Xmx64m -jar /opt/app/app.jar
   links:
     - elasticsearch
   ports:
