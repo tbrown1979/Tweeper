@@ -20,12 +20,12 @@ class TweetRouterActor extends Actor with ActorLogging {
       //emojiActor ! emojis
 
     case FilterStreamTweet(t) =>
+      metricActor ! TrackTweet
       TweetPersistence.storeTweet(t)
       //hashtagActor ! hts
       //emojiActor ! emojis
       context.system.eventStream.publish(t)
   }
 
-  context.system.scheduler.schedule(0 seconds, 5 seconds, metricActor, ReportMetrics)
-
+  context.system.scheduler.schedule(0 seconds, 15 seconds, metricActor, ReportMetrics)
 }

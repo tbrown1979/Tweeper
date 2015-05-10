@@ -1,4 +1,4 @@
-FROM williamyeh/sbt
+FROM nightscape/docker-sbt
 
 MAINTAINER Taylor Brown
 
