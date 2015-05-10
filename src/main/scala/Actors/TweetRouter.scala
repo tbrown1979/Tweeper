@@ -20,7 +20,7 @@ class TweetRouterActor extends Actor with ActorLogging {
       //emojiActor ! emojis
 
     case FilterStreamTweet(t) =>
-      metricActor ! TrackTweet
+      //metricActor ! TrackTweet
       TweetPersistence.storeTweet(t)
       //hashtagActor ! hts
       //emojiActor ! emojis
