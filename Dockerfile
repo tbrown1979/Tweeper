@@ -1,4 +1,4 @@
-FROM williamyeh/scala
+FROM williamyeh/sbt
 
 MAINTAINER Taylor Brown
 

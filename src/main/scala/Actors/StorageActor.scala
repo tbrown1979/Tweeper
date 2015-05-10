@@ -33,9 +33,9 @@ trait ElasticSearchTweetPersistence extends TweetPersistence with ElasticSearchC
 
   def searchTweets(size: Int, from: Int, searchTerms: List[String]): Future[List[Tweet]] = {
     val searchQuery = if (searchTerms.isEmpty) "(*)" else s"(${searchTerms.mkString(" ")})"
-    println(searchQuery)
+    //println(searchQuery)
     val esQuery = s"""{"size":${size},"from":${from},"query":{"query_string":{"default_field":"text","query":"${searchQuery} AND lang:en","default_operator":"AND"}},"sort":{"id":"desc"}}"""
-    println(esQuery)
+    //println(esQuery)
     val tweetListPipeline = sendReceive ~> unmarshal[EsSearchResult]
     tweetListPipeline(Post(s"http://$url/tweets/tweet/_search", esQuery))
       .map(res => res.hits.hits.map(_._source))
