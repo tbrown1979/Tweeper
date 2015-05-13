@@ -1,0 +1,16 @@
+nginx:
+  #build: nginx/
+  image: tbrown1979/tweeper-nginx
+  links:
+    - website:website
+  ports:
+    - "80:80"
+website:
+  image: tbrown1979/tweeper
+  command: java -Xmx64m -jar /opt/app/app.jar
+  links:
+    - elasticsearch
+  ports:
+    - "8080:8080"
+elasticsearch:
+  image: elasticsearch

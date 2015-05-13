@@ -2,10 +2,6 @@ package com.tbrown.twitterStream
 import akka.actor._
 import akka.pattern.ask
 import akka.util.Timeout
-import com.sksamuel.elastic4s.ElasticClient
-import com.sksamuel.elastic4s.ElasticDsl._
-import org.elasticsearch.action.index.IndexResponse
-import org.elasticsearch.action.search.SearchResponse
 import scala.concurrent.duration._
 import spray.can.Http
 import spray.can.Http.RegisterChunkHandler
