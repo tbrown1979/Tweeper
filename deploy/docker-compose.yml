@@ -13,4 +13,4 @@ website:
   ports:
     - "8080:8080"
 elasticsearch:
-  image: elasticsearch
+  image: tbrown1979/small-es
