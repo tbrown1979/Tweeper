@@ -18,11 +18,10 @@ import HttpMethods._
 import MediaTypes._
 import MediaTypes._
 
-class ServiceActor extends Actor with ActorLogging with ServiceRoute {// with FrontendContentRoute {
+class ServiceActor extends Actor with ActorLogging with ServiceRoute {
   def actorRefFactory = context
 
   val route =
-    //contentRoute ~
     serviceRoute
 
   def receive = runRoute(route)
@@ -84,14 +83,5 @@ trait ServiceRoute extends HttpService {
     //     }
     //   }
     // }
-  }
-}
-
-trait FrontendContentRoute extends HttpService {
-  val contentRoute = {
-    path("") {
-      getFromResource("www/index.html")
-    } ~
-    pathPrefix("www") { get { getFromResourceDirectory("www") } }
   }
 }
