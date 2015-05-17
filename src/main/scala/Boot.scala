@@ -6,22 +6,23 @@ import spray.can.Http
 import twitter4j._
 
 
-object Boot extends App with TopicsConfig{
-  implicit val system = StreamingActorSystem
+object Boot extends App
+  with TopicsConfig
+  with AkkaServiceActorComponent
+  with ElasticsearchTweetRepositoryComponent
+  with TweetStreamListeners
+  with TweeperActorModule {
 
   val twitterStreamSample = new TwitterStreamFactory(Util.apiConfigBuilder).getInstance
   val twitterStreamFilter = new TwitterStreamFactory(Util.apiConfigBuilder).getInstance
-  val tweetRouter = system.actorOf(Props[TweetRouterActor])
 
-  twitterStreamSample.addListener(Util.sampleStatusListener(tweetRouter))
-  twitterStreamFilter.addListener(Util.filterStatusListener(tweetRouter))
+  twitterStreamSample.addListener(sampleStatusListener)
+  twitterStreamFilter.addListener(filterStatusListener(system))
 
   twitterStreamFilter.filter(new FilterQuery().track(topics.toArray))
   twitterStreamSample.sample
 
   val port = Properties.envOrElse("PORT", "8080").toInt
 
-  val service = StreamingActorSystem.actorOf(Props[ServiceActor], "demo-service")
-
-  IO(Http) ! Http.Bind(service, "0.0.0.0", port)
+  IO(Http) ! Http.Bind(serviceActor, "0.0.0.0", port)
 }

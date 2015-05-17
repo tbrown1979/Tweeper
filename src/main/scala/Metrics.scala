@@ -5,19 +5,27 @@ import org.elasticsearch.metrics.ElasticsearchReporter
 import scala.concurrent.duration.TimeUnit
 import spray.json._
 
-object TweetMetrics extends ElasticSearchTweetPersistence {
+object TweetMetrics {//extends ElasticSearchTweetPersistence {
   val metrics = new MetricRegistry
-  val reporter = ElasticsearchReporter.forRegistry(metrics)
-    .hosts("http://" + url)
-    .build();
-  reporter.start(5, TimeUnit.SECONDS);
+  // val reporter = ElasticsearchReporter.forRegistry(metrics)
+  //   .hosts("http://" + url)
+  //   .build();
+  // reporter.start(5, TimeUnit.SECONDS);
 
   val tweetsConsumed: Counter = metrics.counter(MetricRegistry.name("tweets.count"))
-  def incrTweetCount = tweetsConsumed.inc
+  def incrTweetCount(t: TweetStreams.Value) = t match {
+    case TweetStreams.Filter => println
+    case TweetStreams.Sample => tweetsConsumed.inc
+  }
+
   def getTweetCount = tweetsConsumed.getCount
 
   val tweetsRate: Meter = metrics.meter(MetricRegistry.name("tweets.rate"))
-  def markTweet = tweetsRate.mark
+  def markTweet(t: TweetStreams.Value) = t match {
+    case TweetStreams.Filter => println
+    case TweetStreams.Sample => tweetsConsumed.inc
+  }
+
   def getMeanRate = tweetsRate.getMeanRate
   def getOneMinuteRate = tweetsRate.getOneMinuteRate
   def getFiveMinuteRate = tweetsRate.getFiveMinuteRate

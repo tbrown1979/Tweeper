@@ -41,7 +41,22 @@ object ExtendedEntities extends DefaultJsonProtocol {
   implicit val ExtendedEntitiesFormat = jsonFormat1(ExtendedEntities.apply)
 }
 
-case class Tweet (
+// sealed trait Tweet {
+//   def retweeted: Boolean
+//   def lang: String
+//   def id: Long
+//   def extended_entities: Option[ExtendedEntities]
+//   def timestamp_ms: String
+//   def created_at: DateTime
+//   def favorite_count: Int
+//   def text: String
+//   def source: String
+//   def retweet_count: Int
+//   def id_str: String
+//   def user: User
+// }
+
+case class Tweet(
   retweeted: Boolean,
   lang: String,
   id: Long,
@@ -59,3 +74,45 @@ case class Tweet (
 object Tweet extends DefaultJsonProtocol {
   implicit val TweetFormat = jsonFormat12(Tweet.apply)
 }
+
+object TweetStreams extends Enumeration {
+  val Sample, Filter = Value
+}
+
+// case class FilterStreamTweet(
+//   retweeted: Boolean,
+//   lang: String,
+//   id: Long,
+//   extended_entities: Option[ExtendedEntities],
+//   timestamp_ms: String,
+//   created_at: DateTime,
+//   favorite_count: Int,
+//   text: String,
+//   source: String,
+//   retweet_count: Int,
+//   id_str: String,
+//   user: User
+// ) extends Tweet
+
+// object FilterStreamTweet extends DefaultJsonProtocol {
+//   implicit val TweetFormat = jsonFormat12(FilterStreamTweet.apply)
+// }
+
+// case class SampleStreamTweet (
+//   retweeted: Boolean,
+//   lang: String,
+//   id: Long,
+//   extended_entities: Option[ExtendedEntities],
+//   timestamp_ms: String,
+//   created_at: DateTime,
+//   favorite_count: Int,
+//   text: String,
+//   source: String,
+//   retweet_count: Int,
+//   id_str: String,
+//   user: User
+// ) extends Tweet
+
+// object SampleStreamTweet extends DefaultJsonProtocol {
+//   implicit val TweetFormat = jsonFormat12(SampleStreamTweet.apply)
+// }

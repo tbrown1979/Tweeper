@@ -14,28 +14,32 @@ import spray.util._
 import HttpMethods._
 import MediaTypes._
 
-trait TweetPersistence {
-  def storeTweet(tweet: Tweet): Unit
-  def searchTweets(size: Int, from: Int, searchTerms: List[String]): Future[List[Tweet]]
+trait TweetRepositoryComponent {
+  def tweetRepository: TweetRepository
 }
 
-trait ElasticSearchTweetPersistence extends TweetPersistence with ElasticSearchConfig {
-  implicit val system = StreamingActorSystem
-  val pipeline = sendReceive
-
-  def storeTweet(tweet: Tweet) = pipeline {
-    Post(s"http://$url/tweets/tweet/", tweet)
-  }
-
-  def searchTweets(size: Int, from: Int, searchTerms: List[String]): Future[List[Tweet]] = {
-    val searchQuery = if (searchTerms.isEmpty) "(*)" else s"(${searchTerms.mkString(" ")})"
-    //println(searchQuery)
-    val esQuery = s"""{"size":${size},"from":${from},"query":{"query_string":{"default_field":"text","query":"${searchQuery} AND lang:en","default_operator":"AND"}},"sort":{"id":"desc"}}"""
-    //println(esQuery)
-    val tweetListPipeline = sendReceive ~> unmarshal[EsSearchResult]
-    tweetListPipeline(Post(s"http://$url/tweets/tweet/_search", esQuery))
-      .map(res => res.hits.hits.map(_._source))
-  }
+trait TweetRepository {
+  def store(tweet: Tweet): Unit
+  def search(size: Int, from: Int, searchTerms: List[String]): Future[List[Tweet]]
 }
 
-object TweetPersistence extends ElasticSearchTweetPersistence
+trait ElasticsearchTweetRepositoryComponent extends TweetRepositoryComponent {
+  val tweetRepository: TweetRepository = new ElasticsearchTweetRepository{}
+
+  trait ElasticsearchTweetRepository extends TweetRepository with ElasticSearchConfig {
+    implicit val system = StreamingActorSystem
+    val pipeline = sendReceive
+
+    def store(tweet: Tweet) = pipeline {
+      Post(s"http://$url/tweets/tweet/", tweet)
+    }
+
+    def search(size: Int, from: Int, searchTerms: List[String]): Future[List[Tweet]] = {
+      val searchQuery = if (searchTerms.isEmpty) "(*)" else s"(${searchTerms.mkString(" ")})"
+      val esQuery = s"""{"size":${size},"from":${from},"query":{"query_string":{"default_field":"text","query":"${searchQuery} AND lang:en","default_operator":"AND"}},"sort":{"id":"desc"}}"""
+      val tweetListPipeline = sendReceive ~> unmarshal[EsSearchResult]
+      tweetListPipeline(Post(s"http://$url/tweets/tweet/_search", esQuery))
+        .map(res => res.hits.hits.map(_._source))
+    }
+  }
+}

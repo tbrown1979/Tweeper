@@ -4,7 +4,6 @@ import spray.json._
 import twitter4j._
 import DefaultJsonProtocol._
 
-
 object Util extends ApiKeysConfig {
   val apiConfigBuilder = new twitter4j.conf.ConfigurationBuilder()
     .setOAuthConsumerKey(consumerKey)
@@ -22,26 +21,29 @@ object Util extends ApiKeysConfig {
     def onScrubGeo(arg0: Long, arg1: Long) {}
     def onStallWarning(stallWarning: StallWarning) {}
   }
-  //get rid of duplication
-  def filterStatusListener(router: ActorRef) =
+}
+
+trait TweetStreamListeners extends TweetRepositoryComponent {
+  import Util._
+
+  def filterStatusListener(system: ActorSystem) =
     defaultStatusListener(
-      (status: Status) => {
+      (status: Status) => {//future {
         val json = TwitterObjectFactory.getRawJSON(status)
         val tweet = JsonParser(json).convertTo[Tweet]
-        //val hashtags = Hashtags(status.getHashtagEntities.toList.map(_.getText))
-        //val emojis = Emoji.findEmojis(status.getText)
-        router ! FilterStreamTweet(tweet)
+        tweetRepository.store(tweet)
+        system.eventStream.publish(tweet)
+        TweetMetrics.incrTweetCount(TweetStreams.Filter)
       }
     )
 
-  def sampleStatusListener(router: ActorRef) =
+  def sampleStatusListener =
     defaultStatusListener(
-      (status: Status) => {
+      (status: Status) => {//future {
         val json = TwitterObjectFactory.getRawJSON(status)
         val tweet = JsonParser(json).convertTo[Tweet]
-        //val hashtags = Hashtags(status.getHashtagEntities.toList.map(_.getText))
-        //val emojis = Emoji.findEmojis(status.getText)
-        router ! SampleStreamTweet(tweet)
+        TweetMetrics.incrTweetCount(TweetStreams.Sample)
+        TweetMetrics.markTweet(TweetStreams.Sample)
       }
     )
 }
