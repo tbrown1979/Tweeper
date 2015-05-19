@@ -5,30 +5,50 @@ import org.elasticsearch.metrics.ElasticsearchReporter
 import scala.concurrent.duration.TimeUnit
 import spray.json._
 
-object TweetMetrics {//extends ElasticSearchTweetPersistence {
-  val metrics = new MetricRegistry
-  // val reporter = ElasticsearchReporter.forRegistry(metrics)
-  //   .hosts("http://" + url)
-  //   .build();
-  // reporter.start(5, TimeUnit.SECONDS);
-
-  val tweetsConsumed: Counter = metrics.counter(MetricRegistry.name("tweets.count"))
-  def incrTweetCount(t: TweetStreams.Value) = t match {
-    case TweetStreams.Filter => println
-    case TweetStreams.Sample => tweetsConsumed.inc
-  }
-
-  def getTweetCount = tweetsConsumed.getCount
-
-  val tweetsRate: Meter = metrics.meter(MetricRegistry.name("tweets.rate"))
-  def markTweet(t: TweetStreams.Value) = t match {
-    case TweetStreams.Filter => println
-    case TweetStreams.Sample => tweetsConsumed.inc
-  }
-
-  def getMeanRate = tweetsRate.getMeanRate
-  def getOneMinuteRate = tweetsRate.getOneMinuteRate
-  def getFiveMinuteRate = tweetsRate.getFiveMinuteRate
-
-  def stats: StreamStats = StreamStats(getOneMinuteRate, getTweetCount)
+trait MetricReporting {
+  def metrics: MetricRegistry
+  def reporter: ScheduledReporter
 }
+
+trait ConsoleMetricReporting extends MetricReporting {
+  val reporter = ConsoleReporter.forRegistry(metrics)
+    .convertRatesTo(TimeUnit.SECONDS)
+    .convertDurationsTo(TimeUnit.MILLISECONDS)
+    .build()
+}
+
+object TweetMetrics extends ConsoleMetricReporting {//extends ElasticSearchTweetPersistence {
+  reporter.start(5, TimeUnit.SECONDS);
+
+  val metrics = new MetricRegistry
+
+  val sampleTweetsConsumed: Counter = metrics.counter(MetricRegistry.name("sample.tweets.count"))
+  val filterTweetsConsumed: Counter = metrics.counter(MetricRegistry.name("filter.tweets.count"))
+  def incrTweetCount(t: TweetStreams.Value) = t match {
+    case TweetStreams.Filter => filterTweetsConsumed.inc
+    case TweetStreams.Sample => sampleTweetsConsumed.inc
+  }
+
+  def sampleTweetCount = sampleTweetsConsumed.getCount
+  def filterTweetCount = filterTweetsConsumed.getCount
+
+  val sampleTweetsRate: Meter = metrics.meter(MetricRegistry.name("sample.tweets.rate"))
+  val filterTweetsRate: Meter = metrics.meter(MetricRegistry.name("filter.tweets.rate"))
+  def markTweet(t: TweetStreams.Value) = t match {
+    case TweetStreams.Filter => filterTweetsConsumed.inc
+    case TweetStreams.Sample => sampleTweetsConsumed.inc
+  }
+
+  def meanSampleRate = sampleTweetsRate.getMeanRate
+  def oneMinuteSampleRate = sampleTweetsRate.getOneMinuteRate
+  def fiveMinuteSampleRate = sampleTweetsRate.getFiveMinuteRate
+
+  def meanFilterRate = filterTweetsRate.getMeanRate
+  def oneMinuteFilterRate = filterTweetsRate.getOneMinuteRate
+  def fiveMinuteFilterRate = filterTweetsRate.getFiveMinuteRate
+
+  def sampleStats: StreamStats = StreamStats(oneMinuteSampleRate, sampleTweetCount)
+  def filterStats: StreamStats = StreamStats(oneMinuteFilterRate, filterTweetCount)
+}
+//object TweetMetrics extends TweetMetricss with ConsoleMetricReporting
+

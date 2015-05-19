@@ -24,9 +24,9 @@ trait ServiceActorComponent {
 
 trait AkkaServiceActorComponent extends ServiceActorComponent with TweetRepositoryComponent with ActorModule {
 
-  val serviceActor: ActorRef = system.actorOf(Props[ServiceRouteActor], "service-actor")
+  lazy val serviceActor: ActorRef = system.actorOf(Props(new ServiceRouteActor))
 
-  trait ServiceRouteActor extends Actor with ActorLogging with HttpService {
+  class ServiceRouteActor extends Actor with ActorLogging with HttpService {
     def actorRefFactory = context
 
     import EventSourceService._
