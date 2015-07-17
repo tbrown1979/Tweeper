@@ -9,6 +9,7 @@ ADD . /opt/app
 WORKDIR /opt/app
 
 #RUN rm -rf /opt/app/target /opt/app/project/project /opt/app/project/target
+RUN export SBT_OPTS="-XX:+CMSClassUnloadingEnabled -XX:MaxPermSize=512M"
 
 RUN sbt stage
 
