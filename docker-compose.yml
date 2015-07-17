@@ -6,10 +6,10 @@ nginx:
     - "80:80"
 website:
   build: .
-  command: java -Xmx64m -jar /opt/app/app.jar
+  command: ./target/universal/stage/bin/app
   links:
     - elasticsearch
   ports:
     - "8080:8080"
 elasticsearch:
-  image: elasticsearch
+ image: elasticsearch

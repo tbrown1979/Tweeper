@@ -297,20 +297,34 @@ var chartRT = function () {
 //
 //
 function launchChart() {
-  var chart = new chartRT();
-  chart.xText = "Seconds Ago";
-  chart.yText = "";
-  chart.titleText = "Tweets Per Second";
-  chart.Ticks = 10;
-  chart.TickDuration = 5000;
-  chart.MaxValue = 60;
+  // var chart = new chartRT();
+  // chart.xText = "Seconds Ago";
+  // chart.yText = "";
+  // chart.titleText = "Tweets Per Second";
+  // chart.Ticks = 10;
+  // chart.TickDuration = 5000;
+  // chart.MaxValue = 60;
 
-  var series = "tweets";
-  chart.addSeries(series);
-  var source = new EventSource(config.hostName + "/stats");
-  source.onmessage = function(event) {
-    var json = JSON.parse(event.data);
-    chart.chartSeries[series] = json.avg;
-  };
+  // var series = "tweets";
+  // chart.addSeries(series);
+  // var source = new EventSource(config.hostName + "/stats");
+  // source.onmessage = function(event) {
+  //   var json = JSON.parse(event.data);
+  //   chart.chartSeries[series] = json.avg;
+  // };
+
+  var areaChartData = [
+    {
+      label: "Layer 1",
+      values: [ {time: 1370044800, y: 100}, {time: 1370044801, y: 1000} ]
+    }
+  
+  $(".stream-graph").epoch({
+    type: 'time.area',
+    data: areaChartData
+  })
+  
 }
 launchChart();
+
+
