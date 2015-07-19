@@ -2,6 +2,8 @@ Tweeper
 =======
 This is a project I created to display tweets consumed from the [Twitter Streaming API](https://dev.twitter.com/streaming/overview)
 
+[![Build Status](http://162.243.186.131/job/Master%20Branch/badge/icon)](http://162.243.186.131/job/Master%20Branch/)
+
 ## Overview
 This project uses [Spray](https://spray.io) as a backend. 
 
