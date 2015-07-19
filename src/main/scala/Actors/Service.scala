@@ -18,16 +18,19 @@ import HttpMethods._
 import MediaTypes._
 import MediaTypes._
 
-trait ServiceActorComponent {
-  def serviceActor: ActorRef
+trait ServiceActorComponent extends ServiceComponent with ActorModule {
+  lazy val serviceActor = system.actorOf(Props(new ServiceActor))
+
+  class ServiceActor extends Actor with HttpService with Service {
+    def actorRefFactory = context
+
+    def receive = runRoute(route)
+  }
 }
 
-trait AkkaServiceActorComponent extends ServiceActorComponent with TweetRepositoryComponent with ActorModule {
+trait ServiceComponent extends TweetRepositoryComponent with ActorModule {
 
-  lazy val serviceActor: ActorRef = system.actorOf(Props(new ServiceRouteActor))
-
-  class ServiceRouteActor extends Actor with ActorLogging with HttpService {
-    def actorRefFactory = context
+  trait Service extends Directives {
 
     import EventSourceService._
 
@@ -36,11 +39,12 @@ trait AkkaServiceActorComponent extends ServiceActorComponent with TweetReposito
         respondAsEventStream {
           ctx => {
             val peer = ctx.responder
-            actorRefFactory actorOf Props(streamer(peer))
+            system actorOf Props(streamer(peer))
           }
         }
       }
     }
+
     val route = {
       path("ping") {
         complete("PONG!")
@@ -73,7 +77,7 @@ trait AkkaServiceActorComponent extends ServiceActorComponent with TweetReposito
       }
     }
 
-    def receive = runRoute(route)
+    //def receive = runRoute(route)
       //  ~
       // pathPrefix("top") {
       //   path("emojis") {

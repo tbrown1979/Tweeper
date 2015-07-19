@@ -1,4 +1,3 @@
-
 package com.tbrown.twitterStream
 
 import org.specs2.specification.Scope
