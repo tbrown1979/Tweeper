@@ -24,6 +24,7 @@ trait DeactivatedTimeConversions extends org.specs2.time.TimeConversions {
 object StreamerSpec extends Specification with DeactivatedTimeConversions {
 
   class context extends TestKit(ActorSystem("test")) with Scope {
+    import DateTimeJsonProtocol._
     import EventSourceService._
     val probe = TestProbe()
     val deadProbe = TestProbe()
@@ -31,7 +32,7 @@ object StreamerSpec extends Specification with DeactivatedTimeConversions {
     val eventStream = system.eventStream
 
     val date = DateTime.now
-    val user = User("", 0, "", 0, 0, None, "", DateTime.now, 0, 0, "", "", "")
+    val user = User("", 0, "", 0, 0, None, "", date, 0, 0, "", "", "")
     def tweet(lang: String = "", text: String = ""): Tweet = 
       Tweet(false, lang, 0, None, "", date, 0, text, "", 0, "", user)
   }

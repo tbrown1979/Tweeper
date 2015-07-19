@@ -12,9 +12,10 @@ import spray.httpx.SprayJsonSupport._
 
 
 class ServiceSpec extends Specification with Specs2RouteTest with ServiceComponent with MemoryBasedTweetRepositoryComponent with AdditionalFormats {
-
-  val date = DateTime.now
-  val user = User("", 0, "", 0, 0, None, "", DateTime.now, 0, 0, "", "", "")
+  import DateTimeJsonProtocol._
+  import DateTimeJsonFormat._
+  val date = read(write(DateTime.now))
+  val user = User("", 0, "", 0, 0, None, "", date, 0, 0, "", "", "")
   def tweet(lang: String = "", text: String = ""): Tweet =
     Tweet(false, lang, 0, None, "", date, 0, text, "", 0, "", user)
 
@@ -46,15 +47,6 @@ class ServiceSpec extends Specification with Specs2RouteTest with ServiceCompone
         handled must beFalse
       }
     }
-
-    // "return a MethodNotAllowed error for PUT requests to the root path" in {
-    //   Put() ~> sealRoute(myRoute) ~> check {
-    //     status === MethodNotAllowed
-    //     responseAs[String] === "HTTP method not allowed, supported methods: GET"
-    //   }
-    // }
   }
-
-  //trait context extends Scope with ServiceComponent with MemoryBasedTweetRepositoryComponent {
 }
 
