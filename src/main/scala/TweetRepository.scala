@@ -30,8 +30,7 @@ trait MemoryBasedTweetRepositoryComponent extends TweetRepositoryComponent with 
     var storage: List[Tweet] = List.empty[Tweet]
     def store(tweet: Tweet): Unit = storage = storage :+ tweet
     def search(size: Int, from: Int, searchTerms: List[String]): Future[List[Tweet]] = {
-      //todo
-      Future.successful(storage)
+      Future.successful(storage.filter(t => searchTerms.map(t.text.contains(_)).reduce(_ || _)))
     }
   }
 }

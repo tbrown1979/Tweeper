@@ -35,27 +35,24 @@ trait ServiceComponent extends TweetRepositoryComponent with ActorModule {
     import EventSourceService._
 
     def streamRoute[T](streamer: ActorRef => Streamer[T]) = {
-      respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
-        respondAsEventStream {
-          ctx => {
-            val peer = ctx.responder
-            system actorOf Props(streamer(peer))
-          }
+      respondAsEventStream {
+        ctx => {
+          val peer = ctx.responder
+          system actorOf Props(streamer(peer))
         }
       }
     }
 
     val route = {
       path("ping") {
-        complete("PONG!")
+        complete("pong")
       } ~
       path("stats") {
         streamRoute((peer: ActorRef) => new Streamer[StreamStats](peer))
       } ~
       pathPrefix("stream" / "filter") {
         parameters('lang.?, 'terms.?) { (lang, terms) =>
-          val termList: List[String] =
-            terms.fold(List[String]())(_.split("\\+").toList.map(t => t.toLowerCase))//use unmarshalling?
+          val termList: List[String] = terms.fold(List[String]())(_.split("\\+").toList.map(t => t.toLowerCase))
           streamRoute((peer: ActorRef) => new TweetStreamer(peer, termList, lang))
         } ~
         pathEnd {
@@ -63,33 +60,29 @@ trait ServiceComponent extends TweetRepositoryComponent with ActorModule {
         }
       } ~
       path("search") {
-        respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
-          post {
-            entity(as[SearchQuery]) { search =>
-              val size = search.size
-              val from = search.from
-              val searchTerms = search.searchTerms
-
-              complete(tweetRepository.search(size, from, searchTerms))
-            }
+        post {
+          entity(as[SearchQuery]) { search =>
+            complete(searchResults(search))
           }
         }
       }
     }
 
-    //def receive = runRoute(route)
-      //  ~
-      // pathPrefix("top") {
-      //   path("emojis") {
-      //     respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
-      //     complete(EmojiTracker.topElements(3))
-      //     }
-      //   } ~
-      //   path("hashtags") {
-      //     respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
-      //     complete(HashtagTracker.topElements(3).map(hts => hts.map(Hashtag(_))))
-      //     }
-      //   }
-      // }
+    def searchResults(search: SearchQuery): Future[List[Tweet]] =
+      tweetRepository.search(search.size, search.from, search.searchTerms)
+
+    //  ~
+    // pathPrefix("top") {
+    //   path("emojis") {
+    //     respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
+    //     complete(EmojiTracker.topElements(3))
+    //     }
+    //   } ~
+    //   path("hashtags") {
+    //     respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
+    //     complete(HashtagTracker.topElements(3).map(hts => hts.map(Hashtag(_))))
+    //     }
+    //   }
+    // }
   }
 }

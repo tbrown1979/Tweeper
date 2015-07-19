@@ -30,9 +30,10 @@ object StreamerSpec extends Specification with DeactivatedTimeConversions {
 
     val eventStream = system.eventStream
 
+    val date = DateTime.now
     val user = User("", 0, "", 0, 0, None, "", DateTime.now, 0, 0, "", "", "")
     def tweet(lang: String = "", text: String = ""): Tweet = 
-      Tweet(false, lang, 0, None, "", DateTime.now, 0, text, "", 0, "", user)
+      Tweet(false, lang, 0, None, "", date, 0, text, "", 0, "", user)
   }
 
   "Streamer" should {
