@@ -32,7 +32,7 @@ object EventSourceService {
   }
 }
 
-abstract class Streamer[T: JsonWriter: ClassTag](client: ActorRef) extends Actor with ActorLogging {
+class Streamer[T: JsonWriter: ClassTag](client: ActorRef) extends Actor with ActorLogging {
   import EventSourceService._
 
   log.debug("Starting streaming response ...")
@@ -47,7 +47,9 @@ abstract class Streamer[T: JsonWriter: ClassTag](client: ActorRef) extends Actor
   def streamToClient[A: JsonWriter](toStream: A): Unit =
     client ! MessageChunk(formatAsSSE(toStream.toJson.toString))
 
-  def streamerReceive: Receive
+  def streamerReceive: Receive = {
+    case t: T => streamToClient(t)
+  }
 
   def streamClosed: Receive =  {
     case x: Http.ConnectionClosed =>
@@ -56,12 +58,6 @@ abstract class Streamer[T: JsonWriter: ClassTag](client: ActorRef) extends Actor
   }
 
   def receive = streamerReceive orElse streamClosed
-}
-
-class GenericStreamer[T: JsonWriter: ClassTag](client: ActorRef) extends Streamer[T](client) {
-  def streamerReceive: Receive = {
-    case t: T => streamToClient(t)
-  }
 }
 
 class TweetStreamer(client: ActorRef, terms: List[String] = Nil, lang: Option[String] = None) extends Streamer[Tweet](client) {
@@ -74,13 +70,19 @@ class TweetStreamer(client: ActorRef, terms: List[String] = Nil, lang: Option[St
       tweetWords.foldLeft(false)((matched, word) => isTerm(word) || matched)
     }
   }
-  def streamerReceive: Receive = {
+  override def streamerReceive: Receive = {
     case t: Tweet =>
       future {
         tweetHasMatchedTerms(t) && matchLang(t)
       } onComplete {
-        case Success(p) => if (p) streamToClient(t)
+        case Success(p) => if (p) {
+          log.debug("Sending down tweet")
+          streamToClient(t)
+        }
         case Failure(e) => log.error(s"Filter Streamer Failure: $e")
       }
   }
+
+  override def receive = streamerReceive orElse streamClosed
+
 }

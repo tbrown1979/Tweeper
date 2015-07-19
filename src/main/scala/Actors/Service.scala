@@ -46,7 +46,7 @@ trait AkkaServiceActorComponent extends ServiceActorComponent with TweetReposito
         complete("PONG!")
       } ~
       path("stats") {
-        streamRoute((peer: ActorRef) => new GenericStreamer[StreamStats](peer))
+        streamRoute((peer: ActorRef) => new Streamer[StreamStats](peer))
       } ~
       pathPrefix("stream" / "filter") {
         parameters('lang.?, 'terms.?) { (lang, terms) =>
