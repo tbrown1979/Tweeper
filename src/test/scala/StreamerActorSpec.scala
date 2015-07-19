@@ -1,39 +1,21 @@
 package com.tbrown.twitterStream
 
-import com.typesafe.config.ConfigFactory
-
-import akka.actor.Actor
-import akka.actor.ActorRef
-import akka.actor.ActorSystem
-import akka.actor.Props
-import akka.testkit.{ DefaultTimeout, ImplicitSender, TestKit }
-import scala.concurrent.duration._
-import scala.collection.immutable
+import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import akka.testkit.TestActorRef
-import org.specs2.specification.Scope
-import org.specs2.mutable.Specification
-//import org.specs2.execute._
-import org.joda.time.DateTime
 import akka.testkit.TestProbe
-import spray.can.Http.RegisterChunkHandler
-import akka.actor._
-import akka.pattern.ask
+import akka.testkit.{ DefaultTimeout, ImplicitSender, TestKit }
 import akka.util.Timeout
+import com.typesafe.config.ConfigFactory
+import org.joda.time.DateTime
+import org.specs2.mutable.Specification
+import org.specs2.specification.Scope
+import scala.collection.immutable
 import scala.concurrent.duration._
-import scala.reflect.ClassTag
-import scala.reflect._
 import spray.can.Http
 import spray.can.Http.RegisterChunkHandler
 import spray.can.server.Stats
 import spray.http._
-import spray.util._
 import spray.json._
-import MediaTypes._
-import spray.routing.directives.RespondWithDirectives._
-import spray.http.ContentTypes._
-import HttpHeaders.{`Cache-Control`, `Connection`}
-import CacheDirectives.`no-cache`
-
 
 trait DeactivatedTimeConversions extends org.specs2.time.TimeConversions {
   override def intToRichLong(v: Int) = super.intToRichLong(v)
@@ -41,7 +23,7 @@ trait DeactivatedTimeConversions extends org.specs2.time.TimeConversions {
 
 object StreamerSpec extends Specification with DeactivatedTimeConversions {
 
-  class Actors extends TestKit(ActorSystem("test")) with Scope {
+  class context extends TestKit(ActorSystem("test")) with Scope {
     import EventSourceService._
     val probe = TestProbe()
     val deadProbe = TestProbe()
@@ -55,7 +37,7 @@ object StreamerSpec extends Specification with DeactivatedTimeConversions {
 
   "Streamer" should {
 
-    "retrieve tweets from the EventStream and send them to a client actor with Streamer" in new Actors {
+    "retrieve tweets from the EventStream and send them to a client actor with Streamer" in new context {
       import EventSourceService._
 
       val testStreamer = TestActorRef(new Streamer[Tweet](probe.ref))
@@ -79,7 +61,7 @@ object StreamerSpec extends Specification with DeactivatedTimeConversions {
       })
     }
 
-    "retrieve tweets from the EventStream and send them to a client actor with Streamer" in new Actors {
+    "retrieve tweets from the EventStream and send them to a client actor with Streamer" in new context {
 
       import EventSourceService._
 
@@ -104,7 +86,7 @@ object StreamerSpec extends Specification with DeactivatedTimeConversions {
       })
     }
 
-    "filter irrelevant tweets when streaming tweets with TweetStreamer" in new Actors {
+    "filter irrelevant tweets when streaming tweets with TweetStreamer" in new context {
       import EventSourceService._
       val relevantTweet = tweet(text="valid")
 
@@ -129,14 +111,14 @@ object StreamerSpec extends Specification with DeactivatedTimeConversions {
       
     }
 
-    "match language correctly with TweetStreamer" in new Actors {
+    "match language correctly with TweetStreamer" in new context {
       val testTweetStreamer = TestActorRef(new TweetStreamer(deadProbe.ref, Nil, Some("en")))
       val testTweetActor = testTweetStreamer.underlyingActor
 
       testTweetActor.matchLang(tweet(lang="en")) must_== true
     }
 
-    "determine if term is valid" in new Actors {
+    "determine if term is valid" in new context {
       val testTweetStreamer = TestActorRef(new TweetStreamer(deadProbe.ref, List("asdf")))
       val testTweetActor = testTweetStreamer.underlyingActor
 
