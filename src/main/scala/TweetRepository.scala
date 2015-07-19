@@ -23,7 +23,19 @@ trait TweetRepository {
   def search(size: Int, from: Int, searchTerms: List[String]): Future[List[Tweet]]
 }
 
-trait ElasticsearchTweetRepositoryComponent extends TweetRepositoryComponent {
+trait MemoryBasedTweetRepositoryComponent extends TweetRepositoryComponent with ActorModule {
+  val tweetRepository = new MemoryBasedTweetRepository{}
+
+  trait MemoryBasedTweetRepository extends TweetRepository {
+    var storage: List[Tweet] = List.empty[Tweet]
+    def store(tweet: Tweet): Unit = storage = storage :+ tweet
+    def search(size: Int, from: Int, searchTerms: List[String]): Future[List[Tweet]] = {
+      Future.successful(storage.filter(t => searchTerms.map(t.text.contains(_)).reduce(_ || _)))
+    }
+  }
+}
+
+trait ElasticsearchTweetRepositoryComponent extends TweetRepositoryComponent with ActorModule {
   val tweetRepository: TweetRepository = new ElasticsearchTweetRepository{}
 
   trait ElasticsearchTweetRepository extends TweetRepository with ElasticSearchConfig {

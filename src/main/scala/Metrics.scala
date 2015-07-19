@@ -17,7 +17,7 @@ trait ConsoleMetricReporting extends MetricReporting {
     .build()
 }
 
-object TweetMetrics extends ConsoleMetricReporting {//extends ElasticSearchTweetPersistence {
+object TweetMetrics extends ConsoleMetricReporting {
   reporter.start(5, TimeUnit.SECONDS);
 
   val metrics = new MetricRegistry
@@ -50,5 +50,4 @@ object TweetMetrics extends ConsoleMetricReporting {//extends ElasticSearchTweet
   def sampleStats: StreamStats = StreamStats(oneMinuteSampleRate, sampleTweetCount)
   def filterStats: StreamStats = StreamStats(oneMinuteFilterRate, filterTweetCount)
 }
-//object TweetMetrics extends TweetMetricss with ConsoleMetricReporting
 

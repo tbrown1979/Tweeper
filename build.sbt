@@ -21,6 +21,4 @@ libraryDependencies ++= {
 
 enablePlugins(JavaAppPackaging)
 
-//settings(com.typesafe.sbt.SbtNativePackager.packageArchetype.java_application: _*)
-
 Revolver.settings

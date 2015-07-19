@@ -10,11 +10,10 @@ import DefaultJsonProtocol._
 object DateTimeJsonProtocol extends DefaultJsonProtocol {//specific to Twitter's datetime
   val format = "EE MMM d HH:mm:ss Z yyyy"
   val formatter = DateTimeFormat.forPattern(format)
-  private def parseDate(date: String): DateTime = {
-    DateTime.parse(date, formatter)
-  }
+  def parseDate(date: String): DateTime = DateTime.parse(date, formatter)
+  def formatDateTime(date: DateTime) = formatter.print(date)
   implicit object DateTimeJsonFormat extends RootJsonFormat[DateTime] {
-    def write(c: DateTime) = JsString(formatter.print(c))
+    def write(c: DateTime) = JsString(formatDateTime(c))
 
     def read(json: JsValue) = json match {
       case JsString(s) => parseDate(s)

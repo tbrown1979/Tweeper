@@ -10,37 +10,34 @@ case class Emoji(unified: String) {
     })
 }
 
-// object Emoji extends DefaultJsonProtocol {
-//   lazy val allEmojis: List[Emoji] = getEmojis
+object Emoji extends DefaultJsonProtocol {
+  lazy val allEmojis: List[Emoji] = getEmojis
 
-//   def findEmojis(text: String) = {
-//     Emojis(
-//       allEmojis.foldLeft(List[Emoji]())((b, a) => {
-//         if (text.contains(a.toString)) a :: b else b
-//       })
-//     )
-//   }
+  def findEmojis(text: String) =
+    allEmojis.foldLeft(List[Emoji]())((b, a) => {
+      if (text.contains(a.toString)) a :: b else b
+    })
 
-//   private def getEmojis: List[Emoji] = {
-//     //val source = scala.io.Source.fromFile("src/main/resources/emoji_pretty.json")
-//     val source = getClass.getResourceAsStream("/emoji_pretty.json")
-//     //val file = source.getLines mkString "\n"
-//     val file = scala.io.Source.fromInputStream(source).getLines mkString "\n"
-//     //source.close()
-//     val emojiJson = JsonParser(file)
-//     emojiJson.convertTo[List[Emoji]]
-//   }
+  private def getEmojis: List[Emoji] = {
+    //val source = scala.io.Source.fromFile("src/main/resources/emoji_pretty.json")
+    val source = getClass.getResourceAsStream("/emoji_pretty.json")
+    //val file = source.getLines mkString "\n"
+    val file = scala.io.Source.fromInputStream(source).getLines mkString "\n"
+    //source.close()
+    val emojiJson = JsonParser(file)
+    emojiJson.convertTo[List[Emoji]]
+  }
 
-//   implicit val EmojiFormat = jsonFormat1(Emoji.apply)
-//   implicit object EmojiJsonFormat extends RootJsonFormat[Emoji] {
-//     def write(e: Emoji) = JsObject(
-//       "emoji" -> JsString(e.toString)
-//     )
-//     def read(value: JsValue): Emoji = {
-//       value.asJsObject.getFields("unified") match {
-//         case Seq(JsString(unified)) =>
-//           new Emoji(unified)
-//       }
-//     }
-//   }
-// }
+  implicit val EmojiFormat = jsonFormat1(Emoji.apply)
+  implicit object EmojiJsonFormat extends RootJsonFormat[Emoji] {
+    def write(e: Emoji) = JsObject(
+      "emoji" -> JsString(e.toString)
+    )
+    def read(value: JsValue): Emoji = {
+      value.asJsObject.getFields("unified") match {
+        case Seq(JsString(unified)) =>
+          new Emoji(unified)
+      }
+    }
+  }
+}

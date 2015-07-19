@@ -8,7 +8,7 @@ import twitter4j._
 
 object Boot extends App
   with TopicsConfig
-  with AkkaServiceActorComponent
+  with ServiceActorComponent
   with ElasticsearchTweetRepositoryComponent
   with TweetStreamListeners
   with TweeperActorModule {

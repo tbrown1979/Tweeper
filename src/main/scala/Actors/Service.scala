@@ -18,40 +18,41 @@ import HttpMethods._
 import MediaTypes._
 import MediaTypes._
 
-trait ServiceActorComponent {
-  def serviceActor: ActorRef
+trait ServiceActorComponent extends ServiceComponent with ActorModule {
+  lazy val serviceActor = system.actorOf(Props(new ServiceActor))
+
+  class ServiceActor extends Actor with HttpService with Service {
+    def actorRefFactory = context
+
+    def receive = runRoute(route)
+  }
 }
 
-trait AkkaServiceActorComponent extends ServiceActorComponent with TweetRepositoryComponent with ActorModule {
+trait ServiceComponent extends TweetRepositoryComponent with ActorModule {
 
-  lazy val serviceActor: ActorRef = system.actorOf(Props(new ServiceRouteActor))
-
-  class ServiceRouteActor extends Actor with ActorLogging with HttpService {
-    def actorRefFactory = context
+  trait Service extends Directives {
 
     import EventSourceService._
 
     def streamRoute[T](streamer: ActorRef => Streamer[T]) = {
-      respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
-        respondAsEventStream {
-          ctx => {
-            val peer = ctx.responder
-            actorRefFactory actorOf Props(streamer(peer))
-          }
+      respondAsEventStream {
+        ctx => {
+          val peer = ctx.responder
+          system actorOf Props(streamer(peer))
         }
       }
     }
+
     val route = {
       path("ping") {
-        complete("PONG!")
+        complete("pong")
       } ~
       path("stats") {
-        streamRoute((peer: ActorRef) => new GenericStreamer[StreamStats](peer))
+        streamRoute((peer: ActorRef) => new Streamer[StreamStats](peer))
       } ~
       pathPrefix("stream" / "filter") {
         parameters('lang.?, 'terms.?) { (lang, terms) =>
-          val termList: List[String] =
-            terms.fold(List[String]())(_.split("\\+").toList.map(t => t.toLowerCase))//use unmarshalling?
+          val termList: List[String] = terms.fold(List[String]())(_.split("\\+").toList.map(t => t.toLowerCase))
           streamRoute((peer: ActorRef) => new TweetStreamer(peer, termList, lang))
         } ~
         pathEnd {
@@ -59,33 +60,29 @@ trait AkkaServiceActorComponent extends ServiceActorComponent with TweetReposito
         }
       } ~
       path("search") {
-        respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
-          post {
-            entity(as[SearchQuery]) { search =>
-              val size = search.size
-              val from = search.from
-              val searchTerms = search.searchTerms
-
-              complete(tweetRepository.search(size, from, searchTerms))
-            }
+        post {
+          entity(as[SearchQuery]) { search =>
+            complete(searchResults(search))
           }
         }
       }
     }
 
-    def receive = runRoute(route)
-      //  ~
-      // pathPrefix("top") {
-      //   path("emojis") {
-      //     respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
-      //     complete(EmojiTracker.topElements(3))
-      //     }
-      //   } ~
-      //   path("hashtags") {
-      //     respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
-      //     complete(HashtagTracker.topElements(3).map(hts => hts.map(Hashtag(_))))
-      //     }
-      //   }
-      // }
+    def searchResults(search: SearchQuery): Future[List[Tweet]] =
+      tweetRepository.search(search.size, search.from, search.searchTerms)
+
+    //  ~
+    // pathPrefix("top") {
+    //   path("emojis") {
+    //     respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
+    //     complete(EmojiTracker.topElements(3))
+    //     }
+    //   } ~
+    //   path("hashtags") {
+    //     respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
+    //     complete(HashtagTracker.topElements(3).map(hts => hts.map(Hashtag(_))))
+    //     }
+    //   }
+    // }
   }
 }
