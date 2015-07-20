@@ -128,6 +128,3 @@ object StreamerSpec extends Specification with DeactivatedTimeConversions {
     }
   }
 }
-
-
-
