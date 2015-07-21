@@ -9,7 +9,7 @@ ADD . /opt/app
 WORKDIR /opt/app
 
 #RUN rm -rf /opt/app/target /opt/app/project/project /opt/app/project/target
-RUN export SBT_OPTS="-Xms128M -Xmx256M -XX:+CMSClassUnloadingEnabled -XX:MaxPermSize=512M -XX:+UseConcMarkSweepGC"
+RUN export SBT_OPTS="-Xss512k -Xms128M -Xmx256M -XX:+CMSClassUnloadingEnabled -XX:+UseConcMarkSweepGC -XX:+UseCompressedOops"
 
 RUN sbt stage
 
