@@ -10,10 +10,10 @@ WORKDIR /opt/app
 
 #RUN rm -rf /opt/app/target /opt/app/project/project /opt/app/project/target
 
-RUN export SBT_OPTS="-Xms256M -Xmx384M -XX:+CMSClassUnloadingEnabled -XX:+UseConcMarkSweepGC -XX:+UseCompressedOops"
+#RUN export SBT_OPTS="-Xms256M -Xmx384M -XX:+CMSClassUnloadingEnabled -XX:+UseConcMarkSweepGC -XX:+UseCompressedOops"
 #-Xss512k
 
-RUN sbt compile#-mem 256 compile
+RUN sbt -mem 32 compile#-mem 256 compile
 
 RUN ls
 
