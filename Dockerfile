@@ -12,7 +12,7 @@ WORKDIR /opt/app
 
 RUN export SBT_OPTS="-Xss512k -Xms32M -Xmx128M -XX:+CMSClassUnloadingEnabled -XX:+UseConcMarkSweepGC -XX:+UseCompressedOops"
 
-RUN sbt stage
+RUN sbt compile
 
 RUN ls
 
