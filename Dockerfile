@@ -13,7 +13,7 @@ WORKDIR /opt/app
 #RUN export SBT_OPTS="-Xms256M -Xmx384M -XX:+CMSClassUnloadingEnabled -XX:+UseConcMarkSweepGC -XX:+UseCompressedOops"
 #-Xss512k
 
-RUN sbt -mem 32 compile#-mem 256 compile
+RUN sbt -mem 128 compile#-mem 256 compile
 
 RUN ls
 
