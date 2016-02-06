@@ -1,7 +1,6 @@
 package com.tbrown.twitterStream
 import scala.util.matching.Regex
-import spray.json._
-import DefaultJsonProtocol._
+import jsonz._
 
 case class Emoji(unified: String) {
   override def toString: String =
@@ -10,7 +9,8 @@ case class Emoji(unified: String) {
     })
 }
 
-object Emoji extends DefaultJsonProtocol {
+object Emoji extends JsonModule {
+  import Jsonz._
   lazy val allEmojis: List[Emoji] = getEmojis
 
   def findEmojis(text: String) =
@@ -18,26 +18,30 @@ object Emoji extends DefaultJsonProtocol {
       if (text.contains(a.toString)) a :: b else b
     })
 
+  //implicit val EmojiFormat = productFormat1(Emoji.apply)(Emoji.unapply)
+  implicit object EmojiJsonFormat extends Format[Emoji] {
+    import jsonz.Fields._
+
+    def writes(e: Emoji) = 
+      JsObject(
+        "emoji" -> toJson(e.unified) ::
+          Nil
+      )
+
+    def reads(js: JsValue) = {
+      val unified = field[String]("unified", js)
+      unified.map(Emoji(_))
+    }
+  }
+
   private def getEmojis: List[Emoji] = {
     //val source = scala.io.Source.fromFile("src/main/resources/emoji_pretty.json")
     val source = getClass.getResourceAsStream("/emoji_pretty.json")
     //val file = source.getLines mkString "\n"
     val file = scala.io.Source.fromInputStream(source).getLines mkString "\n"
     //source.close()
-    val emojiJson = JsonParser(file)
-    emojiJson.convertTo[List[Emoji]]
+    //val emojiJson = JsonParser(file)
+    fromJsonStr[List[Emoji]](file).getOrElse(List.empty)
   }
 
-  implicit val EmojiFormat = jsonFormat1(Emoji.apply)
-  implicit object EmojiJsonFormat extends RootJsonFormat[Emoji] {
-    def write(e: Emoji) = JsObject(
-      "emoji" -> JsString(e.toString)
-    )
-    def read(value: JsValue): Emoji = {
-      value.asJsObject.getFields("unified") match {
-        case Seq(JsString(unified)) =>
-          new Emoji(unified)
-      }
-    }
-  }
 }

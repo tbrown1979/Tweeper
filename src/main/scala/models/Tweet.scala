@@ -1,118 +1,89 @@
 package com.tbrown.twitterStream
+import jsonz._
 import org.joda.time.DateTime
-import spray.httpx.SprayJsonSupport._
-import spray.json._
-import DateTimeJsonProtocol._
 
 case class User (
-  location: String,
-  statuses_count: Int,
+  location: Option[String],
+  statusesCount: Int,
   lang: String,
   id: Long,
-  favourites_count: Int,
+  favouritesCount: Int,
   description: Option[String],
   name: String,
-  created_at: DateTime,
-  followers_count: Int,
-  friends_count: Int,
-  screen_name: String,
-  id_str: String,
-  profile_image_url: String
+  createdAt: DateTime,
+  followersCount: Int,
+  friendsCount: Int,
+  screenName: String,
+  idStr: String,
+  profileImageUrl: String
 )
 
-object User extends DefaultJsonProtocol {
-  implicit val UserFormat = jsonFormat13(User.apply)
+object User extends JsonModule {
+  implicit val UserFormat = productFormat13(
+    "location",
+    "statuses_count",
+    "lang",
+    "id",
+    "favourites_count",
+    "description",
+    "name",
+    "created_at",
+    "followers_count",
+    "friends_count",
+    "screen_name",
+    "id_str",
+    "profile_image_url"
+  )(User.apply)(User.unapply)
 }
 
 case class MediaElements (
-  media_url_https: String,
+  mediaUrlHttps: String,
   url: String
 )
 
-object MediaElements extends DefaultJsonProtocol {
-  implicit val MediaElementsFormat = jsonFormat2(MediaElements.apply)
+object MediaElements extends JsonModule {
+  implicit val MediaElementsFormat = productFormat2("media_url_https", "url")(MediaElements.apply)(MediaElements.unapply)
 }
 
 case class ExtendedEntities (
   media: List[MediaElements]
 )
 
-object ExtendedEntities extends DefaultJsonProtocol {
-  implicit val ExtendedEntitiesFormat = jsonFormat1(ExtendedEntities.apply)
+object ExtendedEntities extends JsonModule {
+  implicit val ExtendedEntitiesFormat = productFormat1("media")(ExtendedEntities.apply)(ExtendedEntities.unapply)
 }
-
-// sealed trait Tweet {
-//   def retweeted: Boolean
-//   def lang: String
-//   def id: Long
-//   def extended_entities: Option[ExtendedEntities]
-//   def timestamp_ms: String
-//   def created_at: DateTime
-//   def favorite_count: Int
-//   def text: String
-//   def source: String
-//   def retweet_count: Int
-//   def id_str: String
-//   def user: User
-// }
 
 case class Tweet(
   retweeted: Boolean,
   lang: String,
   id: Long,
-  extended_entities: Option[ExtendedEntities],
-  timestamp_ms: String,
-  created_at: DateTime,
-  favorite_count: Int,
+  extendedEntities: Option[ExtendedEntities],
+  timestamp: String,
+  createdAt: DateTime,
+  favoriteCount: Int,
   text: String,
   source: String,
-  retweet_count: Int,
-  id_str: String,
+  retweetCount: Int,
+  idStr: String,
   user: User
 )
 
-object Tweet extends DefaultJsonProtocol {
-  implicit val TweetFormat = jsonFormat12(Tweet.apply)
+object Tweet extends JsonModule {
+  implicit val TweetFormat = productFormat12(
+    "retweeted",
+    "lang",
+    "id",
+    "extended_entities",
+    "timestamp_ms",
+    "created_at",
+    "favorite_count",
+    "text",
+    "source",
+    "retweet_count",
+    "id_str",
+    "user")(Tweet.apply)(Tweet.unapply)
 }
 
 object TweetStreams extends Enumeration {
   val Sample, Filter = Value
 }
-
-// case class FilterStreamTweet(
-//   retweeted: Boolean,
-//   lang: String,
-//   id: Long,
-//   extended_entities: Option[ExtendedEntities],
-//   timestamp_ms: String,
-//   created_at: DateTime,
-//   favorite_count: Int,
-//   text: String,
-//   source: String,
-//   retweet_count: Int,
-//   id_str: String,
-//   user: User
-// ) extends Tweet
-
-// object FilterStreamTweet extends DefaultJsonProtocol {
-//   implicit val TweetFormat = jsonFormat12(FilterStreamTweet.apply)
-// }
-
-// case class SampleStreamTweet (
-//   retweeted: Boolean,
-//   lang: String,
-//   id: Long,
-//   extended_entities: Option[ExtendedEntities],
-//   timestamp_ms: String,
-//   created_at: DateTime,
-//   favorite_count: Int,
-//   text: String,
-//   source: String,
-//   retweet_count: Int,
-//   id_str: String,
-//   user: User
-// ) extends Tweet
-
-// object SampleStreamTweet extends DefaultJsonProtocol {
-//   implicit val TweetFormat = jsonFormat12(SampleStreamTweet.apply)
-// }

@@ -1,9 +1,8 @@
 package com.tbrown.twitterStream
 import com.codahale.metrics._
 import java.util.concurrent.TimeUnit
-import org.elasticsearch.metrics.ElasticsearchReporter
+//import org.elasticsearch.metrics.ElasticsearchReporter
 import scala.concurrent.duration.TimeUnit
-import spray.json._
 
 trait MetricReporting {
   def metrics: MetricRegistry

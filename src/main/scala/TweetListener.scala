@@ -1,8 +1,5 @@
 package com.tbrown.twitterStream
-import akka.actor._
-import spray.json._
 import twitter4j._
-import DefaultJsonProtocol._
 
 object Util extends ApiKeysConfig {
   val apiConfigBuilder = new twitter4j.conf.ConfigurationBuilder()
@@ -23,27 +20,32 @@ object Util extends ApiKeysConfig {
   }
 }
 
-trait TweetStreamListeners extends TweetRepositoryComponent {
+trait TweetStreamListeners extends TweetStreamComponent with JsonModule {
+    //TweetRepositoryComponent {
   import Util._
 
-  def filterStatusListener(system: ActorSystem) =
+  def filterStatusListener =
     defaultStatusListener(
-      (status: Status) => {//future {
+      (status: Status) => {//task {
         val json = TwitterObjectFactory.getRawJSON(status)
-        val tweet = JsonParser(json).convertTo[Tweet]
-        tweetRepository.store(tweet)
-        system.eventStream.publish(tweet)
-        TweetMetrics.incrTweetCount(TweetStreams.Filter)
+        println(json)
+        val tweet = fromJsonStr[Tweet](json)
+
+        tweet.foreach(stream.publishOne(_))
+        //Process.constant(tweet) to stream.publish
+        //tweetRepository.store(tweet)
+        // system.eventStream.publish(tweet)
+        // TweetMetrics.incrTweetCount(TweetStreams.Filter)
       }
     )
 
-  def sampleStatusListener =
-    defaultStatusListener(
-      (status: Status) => {//future {
-        val json = TwitterObjectFactory.getRawJSON(status)
-        val tweet = JsonParser(json).convertTo[Tweet]
-        TweetMetrics.incrTweetCount(TweetStreams.Sample)
-        TweetMetrics.markTweet(TweetStreams.Sample)
-      }
-    )
+  // def sampleStatusListener =
+  //   defaultStatusListener(
+  //     (status: Status) => {//future {
+  //       // val json = TwitterObjectFactory.getRawJSON(status)
+  //       // val tweet = JsonParser(json).convertTo[Tweet]
+  //       // TweetMetrics.incrTweetCount(TweetStreams.Sample)
+  //       // TweetMetrics.markTweet(TweetStreams.Sample)
+  //     }
+  //   )
 }
