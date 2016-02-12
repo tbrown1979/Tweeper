@@ -16,6 +16,9 @@ WORKDIR /opt/app
 RUN sbt -mem 128 compile
 #-mem 256 compile
 
+
+
+
 RUN ls
 
 RUN ls ./target/universal/stage/bin
