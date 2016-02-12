@@ -44,6 +44,7 @@ class Boot(host: String, port: Int) extends TopicsConfig
   with MemoryBasedTweetRepositoryComponent
     with TweetStreamListeners
     with DefaultTweetStreamComponent
+    with StreamProcessor
     with RoutesComponent {
 
   private val logger = getLogger
@@ -58,6 +59,8 @@ class Boot(host: String, port: Int) extends TopicsConfig
   twitterStreamFilter.filter(new FilterQuery().track(topics.toArray))
 
   def write(t: Tweet): Task[Unit] = Task.delay(println("writing a tweet...\n"))
+
+  startTweetCapture
 
   stream.subscribe.to(Process.constant(write _)).run.runAsync(_ => Unit)
 

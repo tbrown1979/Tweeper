@@ -27,11 +27,15 @@ trait TweetStreamListeners extends TweetStreamComponent with JsonModule {
   def filterStatusListener =
     defaultStatusListener(
       (status: Status) => {//task {
+        import jsonz._
         val json = TwitterObjectFactory.getRawJSON(status)
-        println(json)
-        val tweet = fromJsonStr[Tweet](json)
+        //println(json)
+        //val tweet = fromJsonStr[Tweet](json)
+        //println(toJson(json))
+        val tweet = Jsonz.parse(json).map(Tweet.tweetFormat.reads(_))
+        println(tweet)
 
-        tweet.foreach(stream.publishOne(_))
+        tweet.foreach(x => x.foreach(stream.publishOne(_)))
         //Process.constant(tweet) to stream.publish
         //tweetRepository.store(tweet)
         // system.eventStream.publish(tweet)

@@ -4,27 +4,26 @@ object EmojiTracker extends ManagedMemoryCounter[Emoji]
 object HashtagTracker extends ManagedMemoryCounter[String]
 
 trait ElemCounter[A] {
-  def topElements(n: Int = 3): Future[List[A]]
+  def topElements(n: Int = 3): List[A]
   def incr(elem: A): Unit
 }
 
 trait MemoryCounter[A] extends ElemCounter[A] {
   protected var map = collection.mutable.Map[A, Int]()
 
-  def topElements(n: Int = 3): Future[List[A]] =
-    future {
-      val topElementList =
-        map.toList.foldLeft(List[(A, Int)]())( (b, a) =>
-          if (b.size < n) a :: b
-          else {
-            val min = b.map(_._2).min
-            val b_ = b.sortWith( _._2 < _._2 )
-            if (a._2 > min) a :: b_.drop(1)
-            else b
-          }
-        ).sortWith(_._2 > _._2).map(_._1)
-      topElementList
-    }
+  def topElements(n: Int = 3): List[A] = {
+    val topElementList =
+      map.toList.foldLeft(List[(A, Int)]())( (b, a) =>
+        if (b.size < n) a :: b
+        else {
+          val min = b.map(_._2).min
+          val b_ = b.sortWith( _._2 < _._2 )
+          if (a._2 > min) a :: b_.drop(1)
+          else b
+        }
+      ).sortWith(_._2 > _._2).map(_._1)
+    topElementList
+  }
 
   def incr(elem: A) = map.update(elem, map.getOrElse(elem, 0) + 1)
 }

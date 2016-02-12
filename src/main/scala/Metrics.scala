@@ -23,27 +23,24 @@ object TweetMetrics extends ConsoleMetricReporting {
 
   val sampleTweetsConsumed: Counter = metrics.counter(MetricRegistry.name("sample.tweets.count"))
   val filterTweetsConsumed: Counter = metrics.counter(MetricRegistry.name("filter.tweets.count"))
-  def incrTweetCount = t match {
-    case TweetStreams.Filter => filterTweetsConsumed.inc
-    case TweetStreams.Sample => sampleTweetsConsumed.inc
-  }
+  def incrTweetCount = filterTweetsConsumed.inc
 
   def sampleTweetCount = sampleTweetsConsumed.getCount
   def filterTweetCount = filterTweetsConsumed.getCount
 
   val sampleTweetsRate: Meter = metrics.meter(MetricRegistry.name("sample.tweets.rate"))
   val filterTweetsRate: Meter = metrics.meter(MetricRegistry.name("filter.tweets.rate"))
-  def markTweet = filterTweetsRate.inc
+  def markTweet = filterTweetsRate.mark
 
-  def meanSampleRate = sampleTweetsRate.getMeanRate
-  def oneMinuteSampleRate = sampleTweetsRate.getOneMinuteRate
-  def fiveMinuteSampleRate = sampleTweetsRate.getFiveMinuteRate
+  //def meanSampleRate = sampleTweetsRate.getMeanRate
+  //def oneMinuteSampleRate = sampleTweetsRate.getOneMinuteRate
+  //def fiveMinuteSampleRate = sampleTweetsRate.getFiveMinuteRate
 
   def meanFilterRate = filterTweetsRate.getMeanRate
   def oneMinuteFilterRate = filterTweetsRate.getOneMinuteRate
   def fiveMinuteFilterRate = filterTweetsRate.getFiveMinuteRate
 
-  def sampleStats: StreamStats = StreamStats(oneMinuteSampleRate, sampleTweetCount)
-  def filterStats: StreamStats = StreamStats(oneMinuteFilterRate, filterTweetCount)
+//  def sampleStats: StreamStats = StreamStats(oneMinuteSampleRate, sampleTweetCount)
+//  def filterStats: StreamStats = StreamStats(oneMinuteFilterRate, filterTweetCount)
 }
 

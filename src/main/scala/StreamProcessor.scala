@@ -13,9 +13,9 @@ trait StreamProcessor
   def relayTweet(t: Tweet): Task[Unit] = {
     incrTweetCount
     tweetRepository.store(t)
-
+    Task.delay(Unit)
   }
 
-  stream.subscribe.to()
+  lazy val startTweetCapture = stream.subscribe.to(Process.constant(relayTweet _)).run.runAsync(_ => Unit)
 }
 

@@ -69,7 +69,7 @@ case class Tweet(
 )
 
 object Tweet extends JsonModule {
-  implicit val TweetFormat = productFormat12(
+  implicit val tweetFormat = productFormat12(
     "retweeted",
     "lang",
     "id",
