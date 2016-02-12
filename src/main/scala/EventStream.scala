@@ -14,7 +14,9 @@ trait TweetStreamComponent {
   }
 }
 
-trait DefaultTweetStreamComponent extends TweetStreamComponent {
+trait DefaultTweetStreamComponent
+    extends TweetStreamComponent
+    with MemoryBasedTweetRepositoryComponent {
   val stream = new DefaultTweetStream {}
 
   trait DefaultTweetStream extends TweetStream {

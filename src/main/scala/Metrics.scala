@@ -23,7 +23,7 @@ object TweetMetrics extends ConsoleMetricReporting {
 
   val sampleTweetsConsumed: Counter = metrics.counter(MetricRegistry.name("sample.tweets.count"))
   val filterTweetsConsumed: Counter = metrics.counter(MetricRegistry.name("filter.tweets.count"))
-  def incrTweetCount(t: TweetStreams.Value) = t match {
+  def incrTweetCount = t match {
     case TweetStreams.Filter => filterTweetsConsumed.inc
     case TweetStreams.Sample => sampleTweetsConsumed.inc
   }
@@ -33,10 +33,7 @@ object TweetMetrics extends ConsoleMetricReporting {
 
   val sampleTweetsRate: Meter = metrics.meter(MetricRegistry.name("sample.tweets.rate"))
   val filterTweetsRate: Meter = metrics.meter(MetricRegistry.name("filter.tweets.rate"))
-  def markTweet(t: TweetStreams.Value) = t match {
-    case TweetStreams.Filter => filterTweetsConsumed.inc
-    case TweetStreams.Sample => sampleTweetsConsumed.inc
-  }
+  def markTweet = filterTweetsRate.inc
 
   def meanSampleRate = sampleTweetsRate.getMeanRate
   def oneMinuteSampleRate = sampleTweetsRate.getOneMinuteRate

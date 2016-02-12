@@ -26,11 +26,10 @@ trait RoutesComponent extends TweetStreamComponent with JsonModule {
 
   trait Routes {
     lazy val service = HttpService {
-      case GET -> Root / "hello" =>
-        Ok("Hello world.")
+      case GET -> Root / "ping" =>
+        Ok("pong")
 
       case req@ GET -> Root / "ws" =>
-        //val src = awakeEvery(1.seconds)(Strategy.DefaultStrategy, DefaultScheduler).map{ d => Text(s"Ping! $d") }
         val src = stream.subscribe.map(t => Text(toJsonStr(t)))
         val sink: Sink[Task, WebSocketFrame] = Process.constant {
           case Text(t, _) => Task.delay(println(t))
