@@ -21,7 +21,6 @@ object Util extends ApiKeysConfig {
 }
 
 trait TweetStreamListeners extends TweetStreamComponent with JsonModule {
-    //TweetRepositoryComponent {
   import Util._
 
   def filterStatusListener =
@@ -29,17 +28,8 @@ trait TweetStreamListeners extends TweetStreamComponent with JsonModule {
       (status: Status) => {//task {
         import jsonz._
         val json = TwitterObjectFactory.getRawJSON(status)
-        //println(json)
-        //val tweet = fromJsonStr[Tweet](json)
-        //println(toJson(json))
-        val tweet = Jsonz.parse(json).map(Tweet.tweetFormat.reads(_))
-        println(tweet)
-
-        tweet.foreach(x => x.foreach(stream.publishOne(_)))
-        //Process.constant(tweet) to stream.publish
-        //tweetRepository.store(tweet)
-        // system.eventStream.publish(tweet)
-        // TweetMetrics.incrTweetCount(TweetStreams.Filter)
+        val tweet = fromJsonStr[Tweet](json)
+        tweet.foreach(stream.publishOne(_))
       }
     )
 

@@ -21,31 +21,12 @@ import scalaz.stream.{DefaultScheduler, Exchange}
 import scalaz.stream.{Process, Sink}
 import twitter4j._
 
-trait RoutesComponent extends TweetStreamComponent with JsonModule {
-  lazy val service = new Routes{}.service
-
-  trait Routes {
-    lazy val service = HttpService {
-      case GET -> Root / "ping" =>
-        Ok("pong")
-
-      case req@ GET -> Root / "ws" =>
-        val src = stream.subscribe.map(t => Text(toJsonStr(t)))
-        val sink: Sink[Task, WebSocketFrame] = Process.constant {
-          case Text(t, _) => Task.delay(println(t))
-          case f       => Task.delay(println(s"Unknown type: $f"))
-        }
-        WS(Exchange(src, sink))
-    }
-  }
-}
-
 class Boot(host: String, port: Int) extends TopicsConfig
   with MemoryBasedTweetRepositoryComponent
     with TweetStreamListeners
     with DefaultTweetStreamComponent
     with StreamProcessor
-    with RoutesComponent {
+    with Routes {
 
   private val logger = getLogger
   private val pool = Executors.newCachedThreadPool()
@@ -57,18 +38,14 @@ class Boot(host: String, port: Int) extends TopicsConfig
   twitterStreamFilter.addListener(filterStatusListener)
 
   twitterStreamFilter.filter(new FilterQuery().track(topics.toArray))
-
-  def write(t: Tweet): Task[Unit] = Task.delay(println("writing a tweet...\n"))
-
-  startTweetCapture
-
-  stream.subscribe.to(Process.constant(write _)).run.runAsync(_ => Unit)
+  
+  streamProcessor.subStream.run.runAsync(_ => Unit)
 
   //Construct the blaze pipeline.
   def build: ServerBuilder =
     BlazeBuilder.bindHttp(port, host)
       .withWebSockets(true)
-      .mountService(new Routes{}.service)
+      .mountService(websocketRoutes.service)
       .withServiceExecutor(pool)
 }
 

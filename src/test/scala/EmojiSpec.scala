@@ -3,8 +3,6 @@ package com.tbrown.twitterStream
 import org.specs2.specification.Scope
 import org.specs2.mutable.Specification
 import org.specs2.execute._
-import scala.concurrent._
-import scala.concurrent.duration._
 
 object ScraperSpec extends Specification {
   import Emoji._
