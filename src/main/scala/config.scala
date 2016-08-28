@@ -1,23 +1,21 @@
 package com.tbrown.twitterStream
 
-trait Config {
+object Config {
   protected lazy val config = TwitterStreamingConfig
 
   def getString(key: String) = config.getString(key)
   def getInt(key: String) = config.getInt(key)
 }
 
-trait ElasticSearchConfig extends Config {
-  lazy val host = getString("elasticsearch.host")
-  lazy val port = getString("elasticsearch.port")
-  lazy val url = s"$host:$port"
-}
+object Topics {
+  import Config._
 
-trait TopicsConfig extends Config {
   val topics: List[String] = getString("topics").split(",").toList
 }
 
-trait ApiKeysConfig extends Config {
+object ApiKeysConfig {
+  import Config._
+
   val consumerKey = getString("twitter.consumer.key")
   val consumerSecret = getString("twitter.consumer.secret")
   val accessTokenKey = getString("twitter.accessToken.key")

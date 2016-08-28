@@ -7,9 +7,9 @@ nginx:
 website:
   build: .
   command: ./target/universal/stage/bin/app
-  links:
-    - elasticsearch
+  # links:
+  #   - elasticsearch
   ports:
     - "8080:8080"
-elasticsearch:
- image: elasticsearch
+#elasticsearch:
+# image: elasticsearch

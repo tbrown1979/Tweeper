@@ -18,7 +18,8 @@ angular.module('TweetCtrl', [])
 
       console.log(url);
 
-      $scope.source = new EventSource(url);
+      $scope.source = new WebSocket(url)
+      //$scope.source = new EventSource(url);
       $scope.source.termList = termList;
       $scope.source.onmessage = function(event) {
         var tweet = JSON.parse(event.data);
@@ -35,13 +36,9 @@ angular.module('TweetCtrl', [])
     $scope.searchQuery = function(from, size, termList, url, cb) {
       console.log($scope.source);
       if (typeof $scope.source !== "undefined") {
-        console.log("Source's TermList: " + $scope.source.termList);
-        console.log(_.isEqual(termList, $scope.source.termList));
         if (_.isEqual(termList, $scope.source.termList)) {
-          console.log("SAME TERMS");
           return;
         }
-        console.log("closing the source");
         $scope.source.close();
       }
 
@@ -50,7 +47,6 @@ angular.module('TweetCtrl', [])
       } else {
         url = "/stream/filter/?lang=en&terms=" + termList.join("+");
       }
-      console.log("Search Terms: " + termList);
 
       $http.post(config.hostName + '/search',{
         size: size,

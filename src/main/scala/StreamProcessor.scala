@@ -1,21 +1,24 @@
 package com.tbrown.twitterStream
-import scalaz._
-import Scalaz._
-import scalaz.concurrent.Task
-import scalaz.stream._
 
-trait StreamProcessor extends TweetStreamComponent with TweetRepositoryComponent {
+import twitter4j._
 
-  object streamProcessor {
-    import TweetMetrics._
+import fs2._
+import fs2.async
+import fs2.util._
 
-    def relayTweet(t: Tweet): Task[Unit] = {
-      incrTweetCount
-      tweetRepository.store(t)
-      Task.delay(Unit)
-    }
+object Tweets {
+  import Topics._
 
-    lazy val subStream = stream.subscribe.to(Process.constant(relayTweet _))
-  }
+  def stream[F[_]](implicit F: Async[F]): Stream[F, Tweet] =
+    for {
+      q <- Stream.eval(async.unboundedQueue[F, Tweet])
+      _ <- Stream.suspend {
+        val twitterStreamFilter = new TwitterStreamFactory(Util.apiConfigBuilder).getInstance
+
+        twitterStreamFilter.addListener(Util.defaultStatusListener( e => F.unsafeRunAsync(q.enqueue1(e))(_ => ())))
+        twitterStreamFilter.filter(new FilterQuery().track(topics.toArray))
+        Stream.emit(())
+      }
+      tweet <- q.dequeue through pipe.id
+    } yield tweet
 }
-
